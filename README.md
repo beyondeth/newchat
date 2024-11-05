@@ -198,3 +198,6 @@ package.json
 
 error -> uploadthings/route
 export const runtime = "nodejs";
+
+24.11.5
+components/post/post.tsx -> 모달창 생성.
