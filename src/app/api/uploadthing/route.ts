@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+// import { NextRequest, NextResponse } from "next/server";
 import { createRouteHandler } from "uploadthing/server";
 import { fileRouter } from "./core";
 
@@ -6,7 +6,15 @@ export const { GET, POST } = createRouteHandler({
   router: fileRouter,
 });
 
-export const runtime = "edge";
+export const config = {
+  runtime: "edge",
+};
+
+// export const runtime = "edge";
+
+// import { NextRequest } from "next/server";
+// import { createRouteHandler } from "uploadthing/server";
+// import { fileRouter } from "./core";
 
 // export async function GET(request: NextRequest) {
 //   createRouteHandler({
@@ -20,5 +28,6 @@ export const runtime = "edge";
 //   });
 // }
 
-// import { createRouteHandler } from "uploadthing/server";
-// import { fileRouter } from "./core";
+// export const config = {
+//   runtime: "edge",
+// };

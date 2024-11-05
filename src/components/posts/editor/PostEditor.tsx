@@ -37,11 +37,13 @@ export default function PostEditor() {
   const { onClick, ...rootProps } = getRootProps();
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({
         bold: false,
         italic: false,
       }),
+
       Placeholder.configure({
         placeholder: "당신의 생각을 기록하세요...",
       }),
