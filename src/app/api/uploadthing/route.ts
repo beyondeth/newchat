@@ -6,9 +6,9 @@ export const { GET, POST } = createRouteHandler({
   router: fileRouter,
 });
 
-export const config = {
-  runtime: "edge",
-};
+// export const config = {
+//   runtime: "edge",
+// };
 
 // export const runtime = "edge";
 
