@@ -1,5 +1,5 @@
 import PostEditor from "@/components/posts/editor/PostEditor";
-import TrendsSidebar from "@/components/TrendsSidebar";
+// import TrendsSidebar from "@/components/TrendsSidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FollowingFeed from "./FollowingFeed";
 import ForYouFeed from "./ForYouFeed";
@@ -7,7 +7,7 @@ import ForYouFeed from "./ForYouFeed";
 export default function Home() {
   return (
     <main className="flex w-full min-w-0 gap-5">
-      <div className="w-full min-w-0 space-y-5">
+      <div className="w-full min-w-0 space-y-5 max-h-[40rem] max-w-[32rem]">
         <PostEditor />
         <Tabs defaultValue="for-you">
           <TabsList>
@@ -22,7 +22,7 @@ export default function Home() {
           </TabsContent>
         </Tabs>
       </div>
-      <TrendsSidebar />
+      {/* <TrendsSidebar /> */}
     </main>
   );
 }

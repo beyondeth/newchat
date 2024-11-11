@@ -120,7 +120,7 @@ export async function signUp(
 
     if (existingUsername) {
       return {
-        error: "Username already taken",
+        error: "이미 사용중인 닉네임이 있습니다",
       };
     }
 
@@ -135,7 +135,7 @@ export async function signUp(
 
     if (existingEmail) {
       return {
-        error: "Email already taken",
+        error: "이미 사용중인 이메일 주소가 있습니다",
       };
     }
 
@@ -169,7 +169,7 @@ export async function signUp(
     if (isRedirectError(error)) throw error;
     console.error(error);
     return {
-      error: "Something went wrong. Please try again.",
+      error: "무언가 잘못됐어요. 다시 시도해보세요.",
     };
   }
 }

@@ -15,8 +15,12 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
 
-    --primary: 142.1 76.2% 36.3%;
-    --primary-foreground: 355.7 100% 97.3%;
+    /* --primary: 142.1 76.2% 36.3%; */
+    /* --primary: 25 100% 65%;        /* #F87A53을 HSL로 변환한 값 */
+    /* --primary-foreground: 355.7 100% 97.3%; */
+
+    --primary: 210 100% 40%; /* #0066CB를 HSL로 변환한 값 */
+    --primary-foreground: 0 0% 100%; /* 흰색 텍스트 */
 
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;

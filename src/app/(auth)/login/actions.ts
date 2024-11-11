@@ -12,12 +12,19 @@ export async function login(
   credentials: LoginValues,
 ): Promise<{ error: string }> {
   try {
-    const { username, password } = loginSchema.parse(credentials);
+    // const { username, password } = loginSchema.parse(credentials);
+    const { email, password } = loginSchema.parse(credentials);
 
     const existingUser = await prisma.user.findFirst({
+      // where: {
+      //   username: {
+      //     equals: username,
+      //     mode: "insensitive",
+      //   },
+      // },
       where: {
-        username: {
-          equals: username,
+        email: {
+          equals: email,
           mode: "insensitive",
         },
       },
@@ -25,7 +32,7 @@ export async function login(
 
     if (!existingUser || !existingUser.passwordHash) {
       return {
-        error: "Incorrect username or password",
+        error: "올바른 이메일 주소나 비밀번호를 입력해주세요",
       };
     }
 
@@ -38,7 +45,7 @@ export async function login(
 
     if (!validPassword) {
       return {
-        error: "Incorrect username or password",
+        error: "올바른 이메일 주소나 비밀번호를 입력해주세요",
       };
     }
 
@@ -55,7 +62,7 @@ export async function login(
     if (isRedirectError(error)) throw error;
     console.error(error);
     return {
-      error: "Something went wrong. Please try again.",
+      error: "무언가 잘못됐어요. 다시 시도해주세요.",
     };
   }
 }

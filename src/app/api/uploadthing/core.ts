@@ -69,6 +69,8 @@
 
 // export type AppFileRouter = typeof fileRouter;
 
+// ver 2.0
+
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
 import streamServerClient from "@/lib/stream";

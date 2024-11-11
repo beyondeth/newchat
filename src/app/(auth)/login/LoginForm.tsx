@@ -25,7 +25,8 @@ export default function LoginForm() {
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
+      // username: "",
+      email: "",
       password: "",
     },
   });
@@ -44,12 +45,14 @@ export default function LoginForm() {
         {error && <p className="text-center text-destructive">{error}</p>}
         <FormField
           control={form.control}
-          name="username"
+          // name="username"
+          name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              {/* <FormLabel>Username</FormLabel> */}
+              <FormLabel>이메일</FormLabel>
               <FormControl>
-                <Input placeholder="Username" {...field} />
+                <Input placeholder="example@naver.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -60,16 +63,21 @@ export default function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              {/* <FormLabel>Password</FormLabel> */}
+              <FormLabel>비밀번호</FormLabel>
               <FormControl>
-                <PasswordInput placeholder="Password" {...field} />
+                <PasswordInput placeholder="**************" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <LoadingButton loading={isPending} type="submit" className="w-full">
-          Log in
+        <LoadingButton
+          loading={isPending}
+          type="submit"
+          className="bg-[#F87A53] w-full"
+        >
+          로그인
         </LoadingButton>
       </form>
     </Form>

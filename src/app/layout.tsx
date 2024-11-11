@@ -19,10 +19,13 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Engine",
-    default: "Engine",
+    template: "%s | QQ",
+    default: "QQ",
   },
-  description: "The social media app for powernerds",
+  description: "건설업 품질관리자 커뮤니티",
+  icons: {
+    icon: "/QQ.svg",
+  },
 };
 
 export default function RootLayout({
