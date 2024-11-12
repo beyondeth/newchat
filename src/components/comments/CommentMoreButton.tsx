@@ -1,5 +1,5 @@
 import { CommentData } from "@/lib/types";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { Edit2, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import {
@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import DeleteCommentDialog from "./DeleteCommentDialog";
+import EditCommentDialog from "./EditCommentDialog";
 
 interface CommentMoreButtonProps {
   comment: CommentData;
@@ -19,8 +20,9 @@ export default function CommentMoreButton({
   comment,
   className,
 }: CommentMoreButtonProps) {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
+  const [showDeleteDialog, setCommentShowDeleteDialog] = useState(false);
+  //edit 추가함
+  const [showEditDialog, setCommentShowEditDialog] = useState(false);
   return (
     <>
       <DropdownMenu>
@@ -30,10 +32,17 @@ export default function CommentMoreButton({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => setShowDeleteDialog(true)}>
+          <DropdownMenuItem onClick={() => setCommentShowDeleteDialog(true)}>
             <span className="flex items-center gap-3 text-destructive">
               <Trash2 className="size-4" />
               Delete
+            </span>
+          </DropdownMenuItem>
+          {/* //edit 추가함// */}
+          <DropdownMenuItem onClick={() => setCommentShowEditDialog(true)}>
+            <span className="flex items-center gap-3 text-muted-foreground">
+              <Edit2 className="size-4" />
+              Edit
             </span>
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -41,7 +50,12 @@ export default function CommentMoreButton({
       <DeleteCommentDialog
         comment={comment}
         open={showDeleteDialog}
-        onClose={() => setShowDeleteDialog(false)}
+        onClose={() => setCommentShowDeleteDialog(false)}
+      />
+      <EditCommentDialog
+        comment={comment}
+        open={showEditDialog}
+        onClose={() => setCommentShowEditDialog(false)}
       />
     </>
   );

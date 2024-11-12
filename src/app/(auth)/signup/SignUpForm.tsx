@@ -90,7 +90,8 @@ export default function SignUpForm() {
         <LoadingButton
           loading={isPending}
           type="submit"
-          className="bg-[#F87A53] w-full"
+          // className="bg-[#F87A53] w-full"
+          className="w-full"
         >
           계정 만들기
         </LoadingButton>

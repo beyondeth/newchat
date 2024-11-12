@@ -25,4 +25,31 @@ export async function deletePost(id: string) {
   return deletedPost;
 }
 
-// 포스트 아이디와 유저 아이디가 다른 경우 에러 발생 -> 포스트 delete
+// 새로 추가되는 editPost 함수 ⬇️
+export async function editPost({
+  id,
+  content,
+}: {
+  id: string;
+  content: string;
+}) {
+  const { user } = await validateRequest();
+
+  if (!user) throw new Error("Unauthorized");
+
+  const post = await prisma.post.findUnique({
+    where: { id },
+  });
+
+  if (!post) throw new Error("Post not found");
+
+  if (post.userId !== user.id) throw new Error("Unauthorized");
+
+  const editedPost = await prisma.post.update({
+    where: { id },
+    data: { content },
+    include: getPostDataInclude(user.id),
+  });
+
+  return editedPost;
+}

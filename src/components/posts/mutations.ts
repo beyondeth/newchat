@@ -7,13 +7,11 @@ import {
 } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { useToast } from "../ui/use-toast";
-import { deletePost } from "./actions";
+import { deletePost, editPost } from "./actions"; // editPost import 추가
 
 export function useDeletePostMutation() {
   const { toast } = useToast();
-
   const queryClient = useQueryClient();
-
   const router = useRouter();
   const pathname = usePathname();
 
@@ -46,8 +44,6 @@ export function useDeletePostMutation() {
       if (pathname === `/posts/${deletedPost.id}`) {
         router.push(`/users/${deletedPost.user.username}`);
       }
-
-      // postdetail 클릭해서 들어가서 해당 포스트를 삭제할 경우 어디로 리다이렉트 되는지.
     },
     onError(error) {
       console.error(error);
@@ -59,4 +55,48 @@ export function useDeletePostMutation() {
   });
 
   return mutation;
+}
+
+export function useEditPostMutation() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: editPost, // fetch 대신 actions의 editPost 함수 사용
+    onSuccess: async (editedPost) => {
+      const queryFilter: QueryFilters = { queryKey: ["post-feed"] };
+
+      await queryClient.cancelQueries(queryFilter);
+
+      queryClient.setQueriesData<InfiniteData<PostsPage, string | null>>(
+        queryFilter,
+        (oldData) => {
+          if (!oldData) return;
+
+          return {
+            pageParams: oldData.pageParams,
+            pages: oldData.pages.map((page) => ({
+              nextCursor: page.nextCursor,
+              posts: page.posts.map((p) =>
+                p.id === editedPost.id
+                  ? { ...p, content: editedPost.content }
+                  : p,
+              ),
+            })),
+          };
+        },
+      );
+
+      toast({
+        description: "Post updated successfully",
+      });
+    },
+    onError(error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        description: "Failed to update post. Please try again.",
+      });
+    },
+  });
 }

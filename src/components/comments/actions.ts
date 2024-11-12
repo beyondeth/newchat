@@ -117,3 +117,36 @@ export async function deleteComment(id: string) {
 
   return deletedComment;
 }
+
+// 새로 추가되는 editComment 함수 ⬇️
+export async function editComment({
+  id,
+  content,
+}: {
+  id: string;
+  content: string;
+}) {
+  const { user } = await validateRequest();
+
+  if (!user) throw new Error("Unauthorized");
+
+  const comment = await prisma.comment.findUnique({
+    where: { id },
+  });
+
+  if (!comment) throw new Error("Comment not found");
+
+  if (comment.userId !== user.id) throw new Error("Unauthorized");
+
+  const { content: contentValidated } = createCommentSchema.parse({ content });
+
+  const editedComment = await prisma.comment.update({
+    where: { id },
+    data: {
+      content: contentValidated,
+    },
+    include: getCommentDataInclude(user.id),
+  });
+
+  return editedComment;
+}

@@ -72,11 +72,7 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
-        <LoadingButton
-          loading={isPending}
-          type="submit"
-          className="bg-[#F87A53] w-full"
-        >
+        <LoadingButton loading={isPending} type="submit" className="w-full">
           로그인
         </LoadingButton>
       </form>

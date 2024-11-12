@@ -20,12 +20,9 @@ export default function Page() {
             {/* <Link href="/signup" className="block text-center hover:underline">
               계정이 없으신가요? 회원가입
             </Link> */}
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-5">
               <span className="text-muted-foreground">계정이 없으신가요?</span>
-              <Link
-                href="/signup"
-                className="text-[#F87A53] font-bold hover:underline"
-              >
+              <Link href="/signup" className="font-bold hover:underline">
                 회원가입
               </Link>
             </div>
