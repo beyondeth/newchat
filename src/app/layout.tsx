@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     template: "%s | QQ",
     default: "QQ",
   },
-  description: "건설업 품질관리자 커뮤니티",
+  description: "커뮤니티",
   icons: {
     icon: "/QQ.svg",
   },

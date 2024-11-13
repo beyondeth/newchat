@@ -14,7 +14,7 @@ export default function Navbar() {
         >
           <Image src={hashlogo} alt="Logo" width={50} height={50} priority />
           {/* <span>Q2Q.kr</span> */}
-          <span>건설업 품질관리자 커뮤니티</span>
+          <span>Community</span>
         </Link>
         <SearchField />
 
