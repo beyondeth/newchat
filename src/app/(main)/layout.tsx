@@ -1,3 +1,32 @@
+// import { validateRequest } from "@/auth";
+// import { redirect } from "next/navigation";
+// import MenuBar from "./MenuBar";
+// import Navbar from "./Navbar";
+// import SessionProvider from "./SessionProvider";
+
+// export default async function Layout({
+//   children,
+// }: {
+//   children: React.ReactNode;
+// }) {
+//   const session = await validateRequest();
+
+//   if (!session.user) redirect("/login");
+
+//   return (
+//     <SessionProvider value={session}>
+//       <div className="flex min-h-screen flex-col">
+//         <Navbar />
+//         <div className="mx-auto flex w-full max-w-7xl grow gap-5 p-5">
+//           <MenuBar className="sticky top-[5.25rem] hidden h-fit flex-none space-y-3 rounded-2xl bg-card px-3 py-5 shadow-sm sm:block lg:px-5 xl:w-80" />
+//           {children}
+//         </div>
+//         <MenuBar className="sticky bottom-0 flex w-full justify-center gap-5 border-t bg-card p-3 sm:hidden" />
+//       </div>
+//     </SessionProvider>
+//   );
+// }
+
 import { validateRequest } from "@/auth";
 import { redirect } from "next/navigation";
 import MenuBar from "./MenuBar";
@@ -17,11 +46,16 @@ export default async function Layout({
     <SessionProvider value={session}>
       <div className="flex min-h-screen flex-col">
         <Navbar />
-        <div className="mx-auto flex w-full max-w-7xl grow gap-5 p-5">
+        <div className="mx-auto flex w-full max-w-7xl grow gap-5 p-5 pb-[4.5rem] sm:pb-5">
+          {" "}
+          {/* 모바일 메뉴바 높이만큼 하단 패딩 추가 */}
           <MenuBar className="sticky top-[5.25rem] hidden h-fit flex-none space-y-3 rounded-2xl bg-card px-3 py-5 shadow-sm sm:block lg:px-5 xl:w-80" />
           {children}
         </div>
-        <MenuBar className="sticky bottom-0 flex w-full justify-center gap-5 border-t bg-card p-3 sm:hidden" />
+        {/* 모바일 메뉴바 */}
+        <div className="fixed bottom-0 left-0 right-0 sm:hidden">
+          <MenuBar className="flex w-full justify-around border-t bg-card p-3" />
+        </div>
       </div>
     </SessionProvider>
   );
