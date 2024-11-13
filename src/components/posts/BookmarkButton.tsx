@@ -7,7 +7,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Bookmark } from "lucide-react";
+import { BookmarkPlus } from "lucide-react";
 import { useToast } from "../ui/use-toast";
 
 interface BookmarkButtonProps {
@@ -65,7 +65,7 @@ export default function BookmarkButton({
 
   return (
     <button onClick={() => mutate()} className="flex items-center gap-2">
-      <Bookmark
+      <BookmarkPlus
         className={cn(
           "size-5",
           data.isBookmarkedByUser && "fill-primary text-primary",

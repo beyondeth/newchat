@@ -117,7 +117,7 @@ export default function PostEditor() {
           disabled={!input.trim() || isUploading}
           className="min-w-20"
         >
-          글쓰기
+          톡톡
         </LoadingButton>
       </div>
     </div>
