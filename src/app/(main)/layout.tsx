@@ -27,6 +27,8 @@
 //   );
 // }
 
+// MenuBar 모바일에서 하단 고정 //
+
 import { validateRequest } from "@/auth";
 import { redirect } from "next/navigation";
 import MenuBar from "./MenuBar";
