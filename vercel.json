@@ -1,15 +1,8 @@
 {
-  "crons": {
-    "path": "/api/clear-uploads",
-    "schedule": "0 2 * * *"
-  },
-  "functions": {
-    "api/test.js": {
-      "memory": 2000
-    },
-    "api/*.js": {
-      "memory": 2000,
-      "maxDuration": 30
+  "crons": [
+    {
+      "path": "/api/clear-uploads",
+      "schedule": "0 2 * * *"
     }
-  }
+  ]
 }
