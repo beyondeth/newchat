@@ -4,5 +4,14 @@
       "path": "/api/clear-uploads",
       "schedule": "0 2 * * *"
     }
-  ]
+  ],
+  "functions": {
+    "api/test.js": {
+      "memory": 3009
+    },
+    "api/*.js": {
+      "memory": 3009,
+      "maxDuration": 30
+    }
+  }
 }
