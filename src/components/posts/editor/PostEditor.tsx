@@ -72,12 +72,12 @@ export default function PostEditor() {
   }
 
   //사이트 내 이미지를 복사해서 인풋창에 붙여넣기 할 수 있음//
-  function onPaste(e: ClipboardEvent<HTMLInputElement>) {
-    const files = Array.from(e.clipboardData.items)
-      .filter((item) => item.kind === "file")
-      .map((item) => item.getAsFile()) as File[];
-    startUpload(files);
-  }
+  // function onPaste(e: ClipboardEvent<HTMLInputElement>) {
+  //   const files = Array.from(e.clipboardData.items)
+  //     .filter((item) => item.kind === "file")
+  //     .map((item) => item.getAsFile()) as File[];
+  //   startUpload(files);
+  // }
 
   return (
     <div className="flex flex-col gap-5 rounded-2xl bg-card p-5 shadow-sm">
@@ -90,7 +90,7 @@ export default function PostEditor() {
               "max-h-[20rem] w-full overflow-y-auto rounded-2xl bg-background px-5 py-3",
               isDragActive && "outline-dashed",
             )}
-            onPaste={onPaste}
+            // onPaste={onPaste}
           />
           <input {...getInputProps()} />
         </div>

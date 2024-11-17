@@ -6,7 +6,7 @@ import "./globals.css";
 import ReactQueryProvider from "./ReactQueryProvider";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
-import { fileRouter } from "./api/uploadthing/core";
+import { uploadRouter } from "./api/uploadthing/core";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -38,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <NextSSRPlugin routerConfig={extractRouterConfig(fileRouter)} />
+        <NextSSRPlugin routerConfig={extractRouterConfig(uploadRouter)} />
         <ReactQueryProvider>
           <ThemeProvider
             attribute="class"

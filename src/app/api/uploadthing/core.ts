@@ -21,7 +21,7 @@
 
 //       if (oldAvatarUrl) {
 //         const key = oldAvatarUrl.split(
-//           `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
+//           `/a/${process.env.UPLOADTHING_TOKEN}/`,
 //         )[1];
 
 //         await new UTApi().deleteFiles(key);
@@ -29,7 +29,7 @@
 
 //       const newAvatarUrl = file.url.replace(
 //         "/f/",
-//         `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
+//         `/a/${process.env.UPLOADTHING_TOKEN}/`,
 //       );
 
 //       await prisma.user.update({
@@ -57,7 +57,7 @@
 //         data: {
 //           url: file.url.replace(
 //             "/f/",
-//             `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
+//             `/a/${process.env.UPLOADTHING_TOKEN}/`,
 //           ),
 //           type: file.type.startsWith("image") ? "IMAGE" : "VIDEO",
 //         },
@@ -74,16 +74,16 @@
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
 import streamServerClient from "@/lib/stream";
-import { createUploadthing, FileRouter } from "uploadthing/next";
+import { createUploadthing, type FileRouter } from "uploadthing/server";
 import { UploadThingError, UTApi } from "uploadthing/server";
 
 const f = createUploadthing();
 
-export const fileRouter = {
+export const uploadRouter = {
   avatar: f({
     image: { maxFileSize: "512KB" },
   })
-    .middleware(async () => {
+    .middleware(async ({ req }) => {
       const { user } = await validateRequest();
 
       if (!user) throw new UploadThingError("Unauthorized");
@@ -95,7 +95,7 @@ export const fileRouter = {
 
       if (oldAvatarUrl) {
         const key = oldAvatarUrl.split(
-          `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
+          `/a/${process.env.UPLOADTHING_TOKEN}/`,
         )[1];
 
         await new UTApi().deleteFiles(key);
@@ -103,7 +103,7 @@ export const fileRouter = {
 
       const newAvatarUrl = file.url.replace(
         "/f/",
-        `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
+        `/a/${process.env.UPLOADTHING_TOKEN}/`,
       );
 
       await Promise.all([
@@ -127,7 +127,7 @@ export const fileRouter = {
     image: { maxFileSize: "4MB", maxFileCount: 5 },
     video: { maxFileSize: "64MB", maxFileCount: 5 },
   })
-    .middleware(async () => {
+    .middleware(async ({ req }) => {
       const { user } = await validateRequest();
 
       if (!user) throw new UploadThingError("Unauthorized");
@@ -137,16 +137,13 @@ export const fileRouter = {
     .onUploadComplete(async ({ file }) => {
       const media = await prisma.media.create({
         data: {
-          url: file.url.replace(
-            "/f/",
-            `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
-          ),
+          url: file.url.replace("/f/", `/a/${process.env.UPLOADTHING_TOKEN}/`),
           type: file.type.startsWith("image") ? "IMAGE" : "VIDEO",
         },
       });
-
+      // console.log("file url", file.url);
       return { mediaId: media.id };
     }),
 } satisfies FileRouter;
 
-export type AppFileRouter = typeof fileRouter;
+export type UploadRouter = typeof uploadRouter;
