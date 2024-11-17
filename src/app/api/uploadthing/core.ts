@@ -74,16 +74,16 @@
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
 import streamServerClient from "@/lib/stream";
-import { createUploadthing, type FileRouter } from "uploadthing/server";
+import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError, UTApi } from "uploadthing/server";
 
 const f = createUploadthing();
 
-export const uploadRouter = {
+export const ourFileRouter = {
   avatar: f({
     image: { maxFileSize: "512KB" },
   })
-    .middleware(async ({ req }) => {
+    .middleware(async () => {
       const { user } = await validateRequest();
 
       if (!user) throw new UploadThingError("Unauthorized");
@@ -91,11 +91,14 @@ export const uploadRouter = {
       return { user };
     })
     .onUploadComplete(async ({ metadata, file }) => {
+      // This code RUNS ON YOUR SERVER after upload
+      console.log("Upload complete for userId:", metadata.user);
+      console.log("file url", file.url);
       const oldAvatarUrl = metadata.user.avatarUrl;
 
       if (oldAvatarUrl) {
         const key = oldAvatarUrl.split(
-          `/a/${process.env.UPLOADTHING_TOKEN}/`,
+          `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
         )[1];
 
         await new UTApi().deleteFiles(key);
@@ -103,7 +106,7 @@ export const uploadRouter = {
 
       const newAvatarUrl = file.url.replace(
         "/f/",
-        `/a/${process.env.UPLOADTHING_TOKEN}/`,
+        `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
       );
 
       await Promise.all([
@@ -127,7 +130,7 @@ export const uploadRouter = {
     image: { maxFileSize: "4MB", maxFileCount: 5 },
     video: { maxFileSize: "64MB", maxFileCount: 5 },
   })
-    .middleware(async ({ req }) => {
+    .middleware(async () => {
       const { user } = await validateRequest();
 
       if (!user) throw new UploadThingError("Unauthorized");
@@ -137,13 +140,16 @@ export const uploadRouter = {
     .onUploadComplete(async ({ file }) => {
       const media = await prisma.media.create({
         data: {
-          url: file.url.replace("/f/", `/a/${process.env.UPLOADTHING_TOKEN}/`),
+          url: file.url.replace(
+            "/f/",
+            `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
+          ),
           type: file.type.startsWith("image") ? "IMAGE" : "VIDEO",
         },
       });
-      // console.log("file url", file.url);
+
       return { mediaId: media.id };
     }),
 } satisfies FileRouter;
 
-export type UploadRouter = typeof uploadRouter;
+export type OurFileRouter = typeof ourFileRouter;
