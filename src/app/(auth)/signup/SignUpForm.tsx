@@ -81,7 +81,7 @@ export default function SignUpForm() {
             <FormItem>
               <FormLabel>닉네임</FormLabel>
               <FormControl>
-                <Input placeholder="제니" {...field} />
+                <Input placeholder="Jenny" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

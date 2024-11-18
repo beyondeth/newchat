@@ -156,10 +156,12 @@ interface PageProps {
 }
 
 const getUser = cache(async (username: string, loggedInUserId: string) => {
+  // URL 디코딩 추가
+  const decodedUsername = decodeURIComponent(username);
   const user = await prisma.user.findFirst({
     where: {
       username: {
-        equals: username,
+        equals: decodedUsername,
         mode: "insensitive",
       },
     },
@@ -178,7 +180,9 @@ export async function generateMetadata({
 
   if (!loggedInUser) return {};
 
-  const user = await getUser(username, loggedInUser.id);
+  // URL 디코딩 추가
+  const decodedUsername = decodeURIComponent(username);
+  const user = await getUser(decodedUsername, loggedInUser.id);
 
   return {
     title: `${user.displayName} (@${user.username})`,
@@ -196,7 +200,8 @@ export default async function Page({ params: { username } }: PageProps) {
     );
   }
 
-  const user = await getUser(username, loggedInUser.id);
+  const decodedUsername = decodeURIComponent(username);
+  const user = await getUser(decodedUsername, loggedInUser.id);
 
   return (
     <main className="flex w-full min-w-0 gap-5">
