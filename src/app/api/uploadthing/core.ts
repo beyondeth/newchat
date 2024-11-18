@@ -97,17 +97,12 @@ export const ourFileRouter = {
       const oldAvatarUrl = metadata.user.avatarUrl;
 
       if (oldAvatarUrl) {
-        const key = oldAvatarUrl.split(
-          `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
-        )[1];
+        const key = oldAvatarUrl.split(`/f/`)[1];
 
         await new UTApi().deleteFiles(key);
       }
 
-      const newAvatarUrl = file.url.replace(
-        "/f/",
-        `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
-      );
+      const newAvatarUrl = file.url;
 
       await Promise.all([
         prisma.user.update({
@@ -137,18 +132,20 @@ export const ourFileRouter = {
 
       return {};
     })
-    .onUploadComplete(async ({ file }) => {
+    .onUploadComplete(async ({ metadata, file }) => {
       const media = await prisma.media.create({
         data: {
-          url: file.url.replace(
-            "/f/",
-            `/a/${process.env.NEXT_PUBLIC_UPLOADTHING_APP_ID}/`,
-          ),
+          // url: file.url.replace("/f/", `/a/${process.env.UPLOADTHING_TOKEN}/`),
+          url: file.url,
           type: file.type.startsWith("image") ? "IMAGE" : "VIDEO",
         },
       });
+      console.log("Upload complete for userId:", media.url);
+      console.log("file url", file.url);
 
       return { mediaId: media.id };
+
+      //  return { uploadedBy: media.url };
     }),
 } satisfies FileRouter;
 
