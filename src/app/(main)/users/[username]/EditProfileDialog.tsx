@@ -78,10 +78,10 @@ export default function EditProfileDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
+          <DialogTitle>프로필 편집</DialogTitle>
         </DialogHeader>
         <div className="space-y-1.5">
-          <Label>Avatar</Label>
+          <Label>아바타</Label>
           <AvatarInput
             src={
               croppedAvatar
@@ -98,7 +98,7 @@ export default function EditProfileDialog({
               name="displayName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Display name</FormLabel>
+                  <FormLabel>닉네임</FormLabel>
                   <FormControl>
                     <Input placeholder="Your display name" {...field} />
                   </FormControl>
@@ -111,10 +111,10 @@ export default function EditProfileDialog({
               name="bio"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Bio</FormLabel>
+                  <FormLabel>소개</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Tell us a little bit about yourself"
+                      placeholder="나 자신에 대해 살짝 주절주절..."
                       className="resize-none"
                       {...field}
                     />
@@ -125,7 +125,7 @@ export default function EditProfileDialog({
             />
             <DialogFooter>
               <LoadingButton type="submit" loading={mutation.isPending}>
-                Save
+                저장
               </LoadingButton>
             </DialogFooter>
           </form>

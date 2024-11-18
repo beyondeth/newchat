@@ -8,11 +8,6 @@ export interface Attachment {
   isUploading: boolean;
 }
 
-// https://utfs.io/a/eyJhcGlLZXkiOiJza19saXZlXzYwYWFhNjA4MmZiZDdhNjQwYzMxYTNmMGY5MTE1YjJmZWVkMmNjNTU0YzQ1MmY0MWEyZDMyMGExZmE5NjljODgiLCJhcHBJZCI6Imp6a295aWY4dXAiLCJyZWdpb25zIjpbInNlYTEiXX0=/QaM6eoHFbVgjJ6HSJuWNjIYdx1SscvEHZRtgbpVm8e9nkGTX
-
-// https://utfs.io/a/QaM6eoHFbVgjJ6HSJuWNjIYdx1SscvEHZRtgbpVm8e9nkGTX
-// eyJhcGlLZXkiOiJza19saXZlXzYwYWFhNjA4MmZiZDdhNjQwYzMxYTNmMGY5MTE1YjJmZWVkMmNjNTU0YzQ1MmY0MWEyZDMyMGExZmE5NjljODgiLCJhcHBJZCI6Imp6a295aWY4dXAiLCJyZWdpb25zIjpbInNlYTEiXX0
-
 export default function useMediaUpload() {
   const { toast } = useToast();
 

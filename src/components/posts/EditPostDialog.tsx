@@ -37,7 +37,7 @@ export default function EditPostDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit post</DialogTitle>
+          <DialogTitle>수정하기</DialogTitle>
         </DialogHeader>
         <form
           onSubmit={(e) => {
@@ -61,14 +61,14 @@ export default function EditPostDialog({
               onClick={onClose}
               disabled={mutation.isPending}
             >
-              Cancel
+              취소
             </Button>
             <LoadingButton
               type="submit"
               loading={mutation.isPending}
               disabled={!content.trim() || content === post.content}
             >
-              Save
+              저장
             </LoadingButton>
           </DialogFooter>
         </form>

@@ -8,7 +8,7 @@
 
 // export const runtime = "nodejs";
 
-import type { NextRequest } from "next/server";
+// import type { NextRequest } from "next/server";
 import { createRouteHandler } from "uploadthing/next";
 import { ourFileRouter } from "./core";
 
@@ -16,12 +16,12 @@ const handler = createRouteHandler({
   router: ourFileRouter,
 });
 
-// export const { GET, POST } = createRouteHandler({
-//   router: ourFileRouter,
-// });
+export const { GET, POST } = createRouteHandler({
+  router: ourFileRouter,
+});
 
-export const GET = (request: NextRequest) => handler.GET(request);
-export const POST = (request: NextRequest) => handler.POST(request);
+// export const GET = (request: NextRequest) => handler.GET(request);
+// export const POST = (request: NextRequest) => handler.POST(request);
 
 // export const config = {
 //   runtime: "edge",
