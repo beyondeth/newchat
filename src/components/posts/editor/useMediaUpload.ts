@@ -51,11 +51,11 @@ export default function useMediaUpload() {
         }),
       );
     },
-    onUploadError(e) {
+    onUploadError(error) {
       setAttachments((prev) => prev.filter((a) => !a.isUploading));
       toast({
         variant: "destructive",
-        description: e.message,
+        description: "이미지 크기는 32MB를 초과할 수 없습니다.",
       });
     },
   });
@@ -64,7 +64,7 @@ export default function useMediaUpload() {
     if (isUploading) {
       toast({
         variant: "destructive",
-        description: "Please wait for the current upload to finish.",
+        description: "업로드 완료를 기다려주세요.",
       });
       return;
     }
@@ -72,7 +72,7 @@ export default function useMediaUpload() {
     if (attachments.length + files.length > 5) {
       toast({
         variant: "destructive",
-        description: "You can only upload up to 5 attachments per post.",
+        description: "이미지는 5개까지 첨부 할 수 있습니다.",
       });
       return;
     }

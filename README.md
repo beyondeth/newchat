@@ -201,3 +201,7 @@ export const runtime = "nodejs";
 
 24.11.5
 components/post/post.tsx -> 모달창 생성.
+
+24.11.20
+attachments image 크기 32mb 까지 제한.
+서버 올리기 전에 리사이징 하고 서버에도 리사이징 된 파일이 올라가게 끔 추후 수정필요.

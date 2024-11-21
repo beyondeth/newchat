@@ -150,10 +150,10 @@ function AvatarInput({ src, onImageCropped }: AvatarInputProps) {
 
     Resizer.imageFileResizer(
       image,
-      480,
-      480,
+      1080,
+      1080,
       "WEBP",
-      50,
+      80,
       0,
       (uri) => setImageToCrop(uri as File),
       "file",
