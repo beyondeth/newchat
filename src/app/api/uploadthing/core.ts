@@ -92,8 +92,8 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.user);
-      console.log("file url", file.url);
+      // console.log("Upload complete for userId:", metadata.user);
+      // console.log("file url", file.url);
       const oldAvatarUrl = metadata.user.avatarUrl;
 
       if (oldAvatarUrl) {
@@ -140,8 +140,8 @@ export const ourFileRouter = {
           type: file.type.startsWith("image") ? "IMAGE" : "VIDEO",
         },
       });
-      console.log("Upload complete for userId:", media.url);
-      console.log("file url", file.url);
+      // console.log("Upload complete for userId:", media.url);
+      // console.log("file url", file.url);
 
       return { mediaId: media.id };
 
