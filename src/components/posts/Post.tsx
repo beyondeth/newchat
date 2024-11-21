@@ -796,7 +796,7 @@ function MediaPreviews({ attachments }: MediaPreviewsProps) {
         ref={containerRef}
         className={cn(
           "flex gap-3 overflow-x-auto scrollbar-hide",
-          attachments.length === 2 && "flex-wrap justify-between",
+          // attachments.length === 2 && "flex-wrap justify-between",
           attachments.length >= 3 && "flex-nowrap",
         )}
         onScroll={handleScroll}
@@ -844,8 +844,8 @@ function MediaPreview({
     width = 543;
     height = 300;
   } else if (totalCount === 2) {
-    width = 250;
-    height = 330;
+    width = 543;
+    height = 300;
   } else {
     width = 210;
     height = 280;
@@ -860,7 +860,7 @@ function MediaPreview({
         height={height}
         className={cn(
           "rounded-2xl object-cover cursor-pointer",
-          totalCount >= 3 && "flex-shrink-0",
+          totalCount >= 2 && "flex-shrink-0",
         )}
         style={{ width, height }}
         onClick={onClick}
@@ -875,7 +875,7 @@ function MediaPreview({
         controls
         className={cn(
           "rounded-2xl object-cover cursor-pointer",
-          totalCount >= 3 && "flex-shrink-0",
+          totalCount >= 2 && "flex-shrink-0",
         )}
         style={{ width, height }}
         onClick={onClick}
@@ -911,8 +911,8 @@ function MediaModal({ media, onClose }: MediaModalProps) {
           <Image
             src={media.url}
             alt="Attachment"
-            width={800}
-            height={800}
+            width={640}
+            height={640}
             className="max-w-full max-h-full object-contain"
           />
         )}
