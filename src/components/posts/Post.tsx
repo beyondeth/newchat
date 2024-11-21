@@ -795,7 +795,7 @@ function MediaPreviews({ attachments }: MediaPreviewsProps) {
       <div
         ref={containerRef}
         className={cn(
-          "flex gap-3 overflow-x-auto scrollbar-hide",
+          "flex gap-1 overflow-x-auto scrollbar-hide",
           // attachments.length === 2 && "flex-wrap justify-between",
           attachments.length >= 3 && "flex-nowrap",
         )}
@@ -811,7 +811,7 @@ function MediaPreviews({ attachments }: MediaPreviewsProps) {
           />
         ))}
       </div>
-      {attachments.length >= 3 && showRightButton && (
+      {attachments.length >= 2 && showRightButton && (
         <button
           onClick={scrollRight}
           className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
@@ -860,7 +860,7 @@ function MediaPreview({
         height={height}
         className={cn(
           "rounded-2xl object-cover cursor-pointer",
-          totalCount >= 2 && "flex-shrink-0",
+          totalCount >= 3 && "flex-shrink-0",
         )}
         style={{ width, height }}
         onClick={onClick}
@@ -875,7 +875,7 @@ function MediaPreview({
         controls
         className={cn(
           "rounded-2xl object-cover cursor-pointer",
-          totalCount >= 2 && "flex-shrink-0",
+          totalCount >= 3 && "flex-shrink-0",
         )}
         style={{ width, height }}
         onClick={onClick}
