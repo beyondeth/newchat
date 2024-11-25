@@ -48,7 +48,7 @@ export default function FollowButton({
       console.error(error);
       toast({
         variant: "destructive",
-        description: "Something went wrong. Please try again.",
+        description: "다시 시도해주세요.",
       });
     },
   });

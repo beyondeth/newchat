@@ -35,6 +35,7 @@ model User {
   following             Follow[]       @relation("Following")
   followers             Follow[]       @relation("Followers")
   likes                 Like[]
+  views View[]
   bookmarks             Bookmark[]
   comments              Comment[]
   receivedNotifications Notification[] @relation("Recipient")
@@ -71,6 +72,7 @@ model Post {
   user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   attachments         Media[]
   likes               Like[]
+  views View[]
   bookmarks           Bookmark[]
   comments            Comment[]
   linkedNotifications Notification[]
@@ -118,6 +120,20 @@ model Like {
 
   @@unique([userId, postId])
   @@map("likes")
+}
+
+model View {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+  @@index([userId])
+  @@index([postId])
+  @@map("views")
 }
 
 model Bookmark {

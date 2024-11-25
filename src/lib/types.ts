@@ -20,6 +20,7 @@ export function getUserDataSelect(loggedInUserId: string) {
       select: {
         posts: true,
         followers: true,
+        views: true,
       },
     },
   } satisfies Prisma.UserSelect;
@@ -51,10 +52,20 @@ export function getPostDataInclude(loggedInUserId: string) {
         userId: true,
       },
     },
+    // views 필드 추가
+    views: {
+      where: {
+        userId: loggedInUserId,
+      },
+      select: {
+        userId: true,
+      },
+    },
     _count: {
       select: {
         likes: true,
         comments: true,
+        views: true,
       },
     },
   } satisfies Prisma.PostInclude;
@@ -108,6 +119,11 @@ export type NotificationData = Prisma.NotificationGetPayload<{
 export interface NotificationsPage {
   notifications: NotificationData[];
   nextCursor: string | null;
+}
+
+export interface ViewInfo {
+  views: number;
+  hasViewedByUser: boolean;
 }
 
 export interface FollowerInfo {

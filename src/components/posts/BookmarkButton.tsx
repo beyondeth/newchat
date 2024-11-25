@@ -58,7 +58,7 @@ export default function BookmarkButton({
       console.error(error);
       toast({
         variant: "destructive",
-        description: "Something went wrong. Please try again.",
+        description: "북마크를 불러오지 못했어요.",
       });
     },
   });
@@ -67,7 +67,7 @@ export default function BookmarkButton({
     <button onClick={() => mutate()} className="flex items-center gap-2">
       <BookmarkPlus
         className={cn(
-          "size-5",
+          "size-4",
           data.isBookmarkedByUser && "fill-primary text-primary",
         )}
       />

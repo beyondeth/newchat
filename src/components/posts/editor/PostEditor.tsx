@@ -87,7 +87,7 @@ export default function PostEditor() {
           <EditorContent
             editor={editor}
             className={cn(
-              "max-h-[20rem] w-full overflow-y-auto rounded-2xl bg-background px-5 py-3",
+              "text-sm max-h-[20rem] w-full overflow-y-auto rounded-2xl bg-background px-5 py-3",
               isDragActive && "outline-dashed",
             )}
             // onPaste={onPaste}
@@ -116,7 +116,7 @@ export default function PostEditor() {
           onClick={onSubmit}
           loading={mutation.isPending}
           disabled={!input.trim() || isUploading}
-          className="min-w-20"
+          className="text:sm min-w-20"
         >
           톡톡
         </LoadingButton>

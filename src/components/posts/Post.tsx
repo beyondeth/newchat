@@ -664,27 +664,10 @@ import UserTooltip from "../UserTooltip";
 import BookmarkButton from "./BookmarkButton";
 import LikeButton from "./LikeButton";
 import PostMoreButton from "./PostMoreButton";
+import CommentButton from "../comments/CommentButton";
 
 interface PostProps {
   post: PostData;
-}
-
-interface CommentButtonProps {
-  post: PostData;
-  onClick: () => void;
-}
-
-function CommentButton({ post, onClick }: CommentButtonProps) {
-  return (
-    <button onClick={onClick} className="flex items-center gap-2">
-      <MessageSquareText className="size-5" />
-      <span className="text-sm font-medium tabular-nums">
-        {post._count.comments}{" "}
-        {/* <span className="hidden sm:inline">comments</span> */}
-        <span className="hidden sm:inline"></span>
-      </span>
-    </button>
-  );
 }
 
 export default function Post({ post }: PostProps) {
@@ -704,18 +687,20 @@ export default function Post({ post }: PostProps) {
             <UserTooltip user={post.user}>
               <Link
                 href={`/users/${post.user.username}`}
-                className="block font-medium hover:underline"
+                className="block font-medium text-sm hover:underline"
               >
                 {post.user.displayName}
               </Link>
             </UserTooltip>
-            <Link
+            {/* <Link
               href={`/posts/${post.id}`}
               className="block text-sm text-muted-foreground hover:underline"
               suppressHydrationWarning
-            >
+            > */}
+            <div className="block text-xs text-muted-foreground">
               {formatRelativeDate(post.createdAt)}
-            </Link>
+            </div>
+            {/* </Link> */}
           </div>
         </div>
         {post.user.id === user.id && (
@@ -725,15 +710,22 @@ export default function Post({ post }: PostProps) {
           />
         )}
       </div>
-      <Linkify>
-        <div className="whitespace-pre-line break-words">{post.content}</div>
-      </Linkify>
+      <Link
+        href={`/posts/${post.id}`}
+        className="block text-sm"
+        // className="block text-sm text-muted-foreground hover:underline"
+        suppressHydrationWarning
+      >
+        <Linkify>
+          <div className="whitespace-pre-line break-words">{post.content}</div>
+        </Linkify>
+      </Link>
       {!!post.attachments.length && (
         <MediaPreviews attachments={post.attachments} />
       )}
       <hr className="text-muted-foreground" />
       <div className="flex justify-between gap-5">
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-5 ">
           <LikeButton
             postId={post.id}
             initialState={{
@@ -745,6 +737,15 @@ export default function Post({ post }: PostProps) {
             post={post}
             onClick={() => setShowComments(!showComments)}
           />
+          {/* <ViewCounter
+            postId={post.id}
+            initialState={{
+              views: post._count.views,
+              hasViewedByUser: post.views.some(
+                (view) => view.userId === user.id,
+              ),
+            }}
+          /> */}
         </div>
         <BookmarkButton
           postId={post.id}

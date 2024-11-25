@@ -32,17 +32,17 @@ export default function CommentMoreButton({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => setCommentShowDeleteDialog(true)}>
-            <span className="flex items-center gap-3 text-destructive">
-              <Trash2 className="size-4" />
-              Delete
-            </span>
-          </DropdownMenuItem>
           {/* //edit 추가함// */}
           <DropdownMenuItem onClick={() => setCommentShowEditDialog(true)}>
             <span className="flex items-center gap-3 text-muted-foreground">
               <Edit2 className="size-4" />
-              Edit
+              수정
+            </span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setCommentShowDeleteDialog(true)}>
+            <span className="flex items-center gap-3 text-destructive">
+              <Trash2 className="size-4" />
+              삭제
             </span>
           </DropdownMenuItem>
         </DropdownMenuContent>

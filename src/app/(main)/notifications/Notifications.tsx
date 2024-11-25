@@ -61,7 +61,7 @@ export default function Notifications() {
   if (status === "success" && !notifications.length && !hasNextPage) {
     return (
       <p className="text-center text-muted-foreground">
-        You don&apos;t have any notifications yet.
+        아직 알림 항목이 없습니다.
       </p>
     );
   }
@@ -69,7 +69,7 @@ export default function Notifications() {
   if (status === "error") {
     return (
       <p className="text-center text-destructive">
-        An error occurred while loading notifications.
+        알림 항목을 불러오는 중 문제가 생긴것 같아요.
       </p>
     );
   }

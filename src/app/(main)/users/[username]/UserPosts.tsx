@@ -42,7 +42,7 @@ export default function UserPosts({ userId }: UserPostsProps) {
   if (status === "success" && !posts.length && !hasNextPage) {
     return (
       <p className="text-center text-muted-foreground">
-        This user hasn&apos;t posted anything yet.
+        아직 작성한 게시글이 없습니다.
       </p>
     );
   }
@@ -50,7 +50,7 @@ export default function UserPosts({ userId }: UserPostsProps) {
   if (status === "error") {
     return (
       <p className="text-center text-destructive">
-        An error occurred while loading posts.
+        게시글을 불러오지 못했어요.
       </p>
     );
   }

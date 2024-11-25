@@ -38,7 +38,7 @@ export default function Bookmarks() {
   if (status === "success" && !posts.length && !hasNextPage) {
     return (
       <p className="text-center text-muted-foreground">
-        You don&apos;t have any bookmarks yet.
+        아직 즐겨찾기 하신 항목이 없어요.
       </p>
     );
   }
@@ -46,7 +46,7 @@ export default function Bookmarks() {
   if (status === "error") {
     return (
       <p className="text-center text-destructive">
-        An error occurred while loading bookmarks.
+        즐겨찾기를 불러오지 못했어요.
       </p>
     );
   }

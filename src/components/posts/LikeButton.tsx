@@ -50,25 +50,28 @@ export default function LikeButton({ postId, initialState }: LikeButtonProps) {
     },
     onError(error, variables, context) {
       queryClient.setQueryData(queryKey, context?.previousState);
-      console.error(error);
-      toast({
-        variant: "destructive",
-        description: "Something went wrong. Please try again.",
-      });
+      // console.error(error);
+      // toast({
+      //   variant: "destructive",
+      //   description: "Something went wrong. Please try again.",
+      // });
     },
   });
 
   return (
-    <button onClick={() => mutate()} className="flex items-center gap-2">
+    <button
+      onClick={() => mutate()}
+      className="flex items-center gap-2 p-1 rounded-sm transition-colors duration-200 hover:bg-gray-100"
+    >
       <Heart
         className={cn(
-          "size-5",
+          "size-4",
           data.isLikedByUser && "fill-red-500 text-red-500",
         )}
       />
-      <span className="text-sm font-medium tabular-nums">
+      <div className="text-xs font-medium tabular-nums">
         {data.likes} <span className="hidden sm:inline"></span>
-      </span>
+      </div>
     </button>
   );
 }

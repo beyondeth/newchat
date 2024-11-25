@@ -41,19 +41,22 @@ export default function Comments({ post }: CommentsProps) {
           disabled={isFetching}
           onClick={() => fetchNextPage()}
         >
-          Load previous comments
+          이전 댓글 더보기
         </Button>
       )}
       {status === "pending" && <Loader2 className="mx-auto animate-spin" />}
       {status === "success" && !comments.length && (
-        <p className="text-center text-muted-foreground">No comments yet.</p>
+        <p className="text-center text-muted-foreground">
+          아직 댓글이 없습니다.
+        </p>
       )}
       {status === "error" && (
         <p className="text-center text-destructive">
-          An error occurred while loading comments.
+          댓글을 불러오지 못했어요.
         </p>
       )}
-      <div className="divide-y">
+      {/* //댓글 포스트 사이즈// */}
+      <div className="text-sm divide-y">
         {comments.map((comment) => (
           <Comment key={comment.id} comment={comment} />
         ))}

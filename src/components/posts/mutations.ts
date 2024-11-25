@@ -38,7 +38,7 @@ export function useDeletePostMutation() {
       );
 
       toast({
-        description: "Post deleted",
+        description: "게시글이 삭제되었습니다",
       });
 
       if (pathname === `/posts/${deletedPost.id}`) {
@@ -49,7 +49,7 @@ export function useDeletePostMutation() {
       console.error(error);
       toast({
         variant: "destructive",
-        description: "Failed to delete post. Please try again.",
+        description: "게시글 삭제에 실패했습니다, 다시 시도해주세요.",
       });
     },
   });
@@ -88,14 +88,14 @@ export function useEditPostMutation() {
       );
 
       toast({
-        description: "Post updated successfully",
+        description: "게시글 수정이 완료되었습니다",
       });
     },
     onError(error) {
       console.error(error);
       toast({
         variant: "destructive",
-        description: "Failed to update post. Please try again.",
+        description: "게시글 수정이 실패했습니다, 다시 시도해주세요.",
       });
     },
   });

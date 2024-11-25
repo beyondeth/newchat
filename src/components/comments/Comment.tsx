@@ -27,12 +27,12 @@ export default function Comment({ comment }: CommentProps) {
           <UserTooltip user={comment.user}>
             <Link
               href={`/users/${comment.user.username}`}
-              className="font-medium hover:underline"
+              className="font-medium text-sm hover:underline"
             >
               {comment.user.displayName}
             </Link>
           </UserTooltip>
-          <span className="text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             {formatRelativeDate(comment.createdAt)}
           </span>
           {/* <span>답글</span> */}
