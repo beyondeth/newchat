@@ -43,7 +43,7 @@ export default function NewChatDialog({
     queryFn: async () =>
       client.queryUsers(
         {
-          id: { $ne: loggedInUser.id },
+          id: { $ne: loggedInUser!.id },
           role: { $ne: "admin" },
           ...(searchInputDebounced
             ? {
@@ -62,10 +62,10 @@ export default function NewChatDialog({
   const mutation = useMutation({
     mutationFn: async () => {
       const channel = client.channel("messaging", {
-        members: [loggedInUser.id, ...selectedUsers.map((u) => u.id)],
+        members: [loggedInUser!.id, ...selectedUsers.map((u) => u.id)],
         name:
           selectedUsers.length > 1
-            ? loggedInUser.displayName +
+            ? loggedInUser!.displayName +
               ", " +
               selectedUsers.map((u) => u.name).join(", ")
             : undefined,

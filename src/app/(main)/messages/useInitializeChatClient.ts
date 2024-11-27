@@ -8,15 +8,16 @@ export default function useInitializeChatClient() {
   const [chatClient, setChatClient] = useState<StreamChat | null>(null);
 
   useEffect(() => {
+    if (!user) return; // user가 없으면 early return
     const client = StreamChat.getInstance(process.env.NEXT_PUBLIC_STREAM_KEY!);
 
     client
       .connectUser(
         {
-          id: user.id,
-          username: user.username,
-          name: user.displayName,
-          image: user.avatarUrl,
+          id: user!.id,
+          username: user!.username,
+          name: user!.displayName,
+          image: user!.avatarUrl,
         },
         async () =>
           kyInstance
@@ -34,7 +35,8 @@ export default function useInitializeChatClient() {
         .catch((error) => console.error("Failed to disconnect user", error))
         .then(() => console.log("Connection closed"));
     };
-  }, [user.id, user.username, user.displayName, user.avatarUrl]);
+  }, [user]);
+  // }, [user.id, user.username, user.displayName, user.avatarUrl]);
 
   return chatClient;
 }
