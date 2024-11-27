@@ -54,7 +54,7 @@ export default function ChatSidebar({ open, onClose }: ChatSidebarProps) {
       <ChannelList
         filters={{
           type: "messaging",
-          members: { $in: [user.id] },
+          members: { $in: [user!.id] },
         }}
         showChannelSearch
         options={{ state: true, presence: true, limit: 8 }}
@@ -63,7 +63,7 @@ export default function ChatSidebar({ open, onClose }: ChatSidebarProps) {
           searchForChannels: true,
           searchQueryParams: {
             channelFilters: {
-              filters: { members: { $in: [user.id] } },
+              filters: { members: { $in: [user!.id] } },
             },
           },
         }}
