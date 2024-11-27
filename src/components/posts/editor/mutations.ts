@@ -25,7 +25,7 @@ export function useSubmitPostMutation() {
           return (
             query.queryKey.includes("for-you") ||
             (query.queryKey.includes("user-posts") &&
-              query.queryKey.includes(user.id))
+              query.queryKey.includes(user!.id))
           );
         },
       } satisfies QueryFilters;
