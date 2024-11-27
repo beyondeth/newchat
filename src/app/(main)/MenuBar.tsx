@@ -12,14 +12,16 @@ interface MenuBarProps {
 export default async function MenuBar({ className }: MenuBarProps) {
   const { user } = await validateRequest();
 
-  if (!user) return null;
+  // if (!user) return null;
 
-  const unreadNotificationCount = await prisma.notification.count({
-    where: {
-      recipientId: user.id,
-      read: false,
-    },
-  });
+  const unreadNotificationCount = user
+    ? await prisma.notification.count({
+        where: {
+          recipientId: user?.id,
+          read: false,
+        },
+      })
+    : 0;
 
   return (
     <div className={className}>
@@ -34,8 +36,12 @@ export default async function MenuBar({ className }: MenuBarProps) {
           <span className="hidden lg:inline">홈</span>
         </Link>
       </Button>
+      {/* <NotificationsButton
+        initialState={{ unreadCount: unreadNotificationCount }}
+      /> */}
       <NotificationsButton
         initialState={{ unreadCount: unreadNotificationCount }}
+        isLoggedIn={!!user}
       />
       <Button
         variant="ghost"
@@ -43,7 +49,8 @@ export default async function MenuBar({ className }: MenuBarProps) {
         title="Messages"
         asChild
       >
-        <Link href="/messages">
+        {/* <Link href="/messages"> */}
+        <Link href={user ? "/messages" : "/login"}>
           <Mail />
           <span className="hidden lg:inline">메시지</span>
         </Link>
@@ -54,7 +61,8 @@ export default async function MenuBar({ className }: MenuBarProps) {
         title="Bookmarks"
         asChild
       >
-        <Link href="/bookmarks">
+        {/* <Link href="/bookmarks"> */}
+        <Link href={user ? "/bookmarks" : "/login"}>
           <BookmarkPlus />
           <span className="hidden lg:inline">즐겨찾기</span>
         </Link>

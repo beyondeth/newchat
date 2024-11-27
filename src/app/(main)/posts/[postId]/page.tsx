@@ -49,7 +49,7 @@ export default async function Page({ params: { postId } }: PageProps) {
   if (!user) {
     return (
       <p className="text-destructive">
-        You&apos;re not authorized to view this page.
+        이 페이지를 볼 수 있는 권한이 없습니다.
       </p>
     );
   }

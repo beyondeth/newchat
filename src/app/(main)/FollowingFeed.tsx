@@ -38,16 +38,14 @@ export default function FollowingFeed() {
   if (status === "success" && !posts.length && !hasNextPage) {
     return (
       <p className="text-center text-muted-foreground">
-        No posts found. Start following people to see their posts here.
+        아직 팔로잉 하고 있는 상대방이 없어요.
       </p>
     );
   }
 
   if (status === "error") {
     return (
-      <p className="text-center text-destructive">
-        An error occurred while loading posts.
-      </p>
+      <p className="text-center text-destructive">비정상적인 접근입니다.</p>
     );
   }
 
