@@ -679,14 +679,14 @@ export default function Post({ post }: PostProps) {
       <div className="flex justify-between gap-3">
         <div className="flex flex-wrap gap-3">
           <UserTooltip user={post.user}>
-            <Link href={`/users/${post.user.username}`}>
+            <Link href={user ? `/users/${post.user.username}` : "/login"}>
               <UserAvatar avatarUrl={post.user.avatarUrl} />
             </Link>
           </UserTooltip>
           <div>
             <UserTooltip user={post.user}>
               <Link
-                href={`/users/${post.user.username}`}
+                href={user ? `/users/${post.user.username}` : "/login"}
                 className="block font-medium text-sm hover:underline"
               >
                 {post.user.displayName}
@@ -711,7 +711,7 @@ export default function Post({ post }: PostProps) {
         )}
       </div>
       <Link
-        href={`/posts/${post.id}`}
+        href={user ? `/posts/${post.id}` : "/login"}
         className="block text-sm"
         // className="block text-sm text-muted-foreground hover:underline"
         suppressHydrationWarning

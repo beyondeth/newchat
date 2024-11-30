@@ -15,15 +15,16 @@ export function useSubmitPostMutation() {
   const queryClient = useQueryClient();
 
   const { user } = useSession();
+  const endpoint = user ? "/api/posts/for-you" : "/api/posts";
 
   const mutation = useMutation({
     mutationFn: submitPost,
     onSuccess: async (newPost) => {
       const queryFilter = {
-        queryKey: ["post-feed"],
+        queryKey: ["post-feed", endpoint],
         predicate(query) {
           return (
-            query.queryKey.includes("for-you") ||
+            query.queryKey.includes(endpoint) ||
             (query.queryKey.includes("user-posts") &&
               query.queryKey.includes(user!.id))
           );
