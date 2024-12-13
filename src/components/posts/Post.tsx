@@ -73,19 +73,8 @@ export default function Post({ post }: PostProps) {
           <div className="whitespace-pre-line break-words">{post.content}</div>
         </Linkify>
       </Link>
-      {/* {!!post.attachments.length && (
+      {!!post.attachments.length && (
         <MediaPreviews attachments={post.attachments} />
-      )} */}
-      {!!post?.attachments?.length && (
-        <div>
-          {post.attachments.some((attachment) => attachment?.url) ? (
-            <MediaPreviews attachments={post.attachments} />
-          ) : (
-            <div className="rounded-2xl bg-muted flex items-center justify-center h-[300px]">
-              <p className="text-sm text-muted-foreground">이미지가 없습니다</p>
-            </div>
-          )}
-        </div>
       )}
       <hr className="text-muted-foreground" />
       <div className="flex justify-between gap-5">
