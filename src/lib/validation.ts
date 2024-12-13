@@ -15,10 +15,10 @@ export const signUpSchema = z.object({
     /^[a-zA-Z0-9가-힣_-]{2,10}$/,
     "최소 2글자에서 10글자까지 허용, 문자,숫자,특수기호(- , _) 가능",
   ),
-  password: requiredString.regex(
-    /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%&*])[A-Za-z0-9!@#$%&*]{8,30}$/,
-    "비밀번호는 최소 8자 이상 최대30자 이하이며, 최소 1개의 대문자 및 특수문자를 포함해야 합니다",
-  ),
+  password: requiredString
+    .regex(/^.{8,30}$/, "비밀번호는 최소 8자 이상 최대 30자 이하여야 합니다.")
+    .regex(/.*[A-Z].*/, "비밀번호는 최소 1개의 대문자를 포함해야 합니다.")
+    .regex(/.*[@#$&*].*/, "비밀번호는 특수문자(@,#,$,&,*)를 포함해야 합니다."),
 });
 
 export type SignUpValues = z.infer<typeof signUpSchema>;

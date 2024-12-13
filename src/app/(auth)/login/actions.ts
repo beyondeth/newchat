@@ -32,7 +32,7 @@ export async function login(
 
     if (!existingUser || !existingUser.passwordHash) {
       return {
-        error: "올바른 이메일 주소나 비밀번호를 입력해주세요",
+        error: "이메일 주소가 틀렸습니다. 다시 확인해주세요.",
       };
     }
 
@@ -45,7 +45,7 @@ export async function login(
 
     if (!validPassword) {
       return {
-        error: "올바른 이메일 주소나 비밀번호를 입력해주세요",
+        error: "비밀번호가 틀렸습니다. 다시 확인해주세요",
       };
     }
 
