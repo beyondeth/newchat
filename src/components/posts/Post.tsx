@@ -309,6 +309,13 @@ export default function Post({ post }: PostProps) {
   const { user } = useSession();
   const [showComments, setShowComments] = useState(false);
 
+  // 안전하게 attachments 배열 확인
+  const safeAttachments =
+    post?.attachments?.filter(
+      (attachment) =>
+        attachment && attachment.id && attachment.type && attachment.url,
+    ) || [];
+
   return (
     <article className="group/post space-y-3 rounded-2xl bg-card p-5 shadow-sm">
       <div className="flex justify-between gap-3">
@@ -348,8 +355,8 @@ export default function Post({ post }: PostProps) {
           <div className="whitespace-pre-line break-words">{post.content}</div>
         </Linkify>
       </Link>
-      {!!post.attachments.length && (
-        <MediaPreviews attachments={post.attachments} />
+      {safeAttachments.length > 0 && (
+        <MediaPreviews attachments={safeAttachments} />
       )}
       <hr className="text-muted-foreground" />
       <div className="flex justify-between gap-5">
@@ -357,10 +364,9 @@ export default function Post({ post }: PostProps) {
           <LikeButton
             postId={post.id}
             initialState={{
-              likes: post._count.likes,
-              isLikedByUser: post.likes.some(
-                (like) => like.userId === user?.id,
-              ),
+              likes: post._count?.likes || 0,
+              isLikedByUser:
+                post.likes?.some((like) => like?.userId === user?.id) || false,
             }}
           />
           <CommentButton
@@ -371,9 +377,10 @@ export default function Post({ post }: PostProps) {
         <BookmarkButton
           postId={post.id}
           initialState={{
-            isBookmarkedByUser: post.bookmarks.some(
-              (bookmark) => bookmark.userId === user?.id,
-            ),
+            isBookmarkedByUser:
+              post.bookmarks?.some(
+                (bookmark) => bookmark?.userId === user?.id,
+              ) || false,
           }}
         />
       </div>
@@ -405,6 +412,7 @@ function MediaPreviews({ attachments }: MediaPreviewsProps) {
   };
 
   const handleMediaClick = (media: Media) => {
+    if (!media?.id || !media?.url || !media?.type) return;
     setSelectedMedia(media);
   };
 
@@ -412,27 +420,32 @@ function MediaPreviews({ attachments }: MediaPreviewsProps) {
     setSelectedMedia(null);
   };
 
+  // 유효한 미디어만 필터링
+  const validAttachments = attachments.filter(
+    (media) => media && media.id && media.url && media.type,
+  );
+
   return (
     <div className="relative">
       <div
         ref={containerRef}
         className={cn(
           "flex gap-1 overflow-x-auto scrollbar-hide",
-          attachments.length >= 3 && "flex-nowrap",
+          validAttachments.length >= 3 && "flex-nowrap",
         )}
         onScroll={handleScroll}
       >
-        {attachments.map((m, index) => (
+        {validAttachments.map((media, index) => (
           <MediaPreview
-            key={m.id}
-            media={m}
-            totalCount={attachments.length}
+            key={media.id}
+            media={media}
+            totalCount={validAttachments.length}
             index={index}
-            onClick={() => handleMediaClick(m)}
+            onClick={() => handleMediaClick(media)}
           />
         ))}
       </div>
-      {attachments.length >= 2 && showRightButton && (
+      {validAttachments.length >= 2 && showRightButton && (
         <button
           onClick={scrollRight}
           className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
@@ -463,6 +476,20 @@ function MediaPreview({
   const [imageError, setImageError] = useState(false);
   const [videoError, setVideoError] = useState(false);
 
+  // 미디어 데이터 유효성 검사
+  if (!media?.url || !media?.type) {
+    return (
+      <div
+        className="rounded-2xl bg-muted flex items-center justify-center"
+        style={{ width: 210, height: 280 }}
+      >
+        <p className="text-sm text-muted-foreground">
+          미디어를 불러올 수 없습니다
+        </p>
+      </div>
+    );
+  }
+
   let width, height;
   if (totalCount === 1) {
     width = 543;
@@ -474,10 +501,6 @@ function MediaPreview({
     width = 210;
     height = 280;
   }
-
-  const handleVideoError = () => {
-    setVideoError(true);
-  };
 
   if (media.type === "IMAGE") {
     if (imageError) {
@@ -540,7 +563,7 @@ function MediaPreview({
         )}
         style={{ width, height }}
         onClick={onClick}
-        onError={handleVideoError}
+        onError={() => setVideoError(true)}
       />
     );
   }
@@ -557,9 +580,10 @@ function MediaModal({ media, onClose }: MediaModalProps) {
   const [imageError, setImageError] = useState(false);
   const [videoError, setVideoError] = useState(false);
 
-  const handleVideoError = () => {
-    setVideoError(true);
-  };
+  // 미디어 데이터 유효성 검사
+  if (!media?.url || !media?.type) {
+    return null;
+  }
 
   return (
     <div
@@ -611,7 +635,7 @@ function MediaModal({ media, onClose }: MediaModalProps) {
               src={media.url}
               controls
               className="max-w-full max-h-full"
-              onError={handleVideoError}
+              onError={() => setVideoError(true)}
             />
           ))}
       </div>
