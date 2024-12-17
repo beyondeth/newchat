@@ -216,3 +216,6 @@ attachments image 크기 32mb 까지 제한.
 우리는 손님들이 오고가는 여관 곳곳을 부산스럽게 뛰놀며 금방 친구가 되었다. 정중이는 우리집에 거의 매일 놀러왔는데 밥시간이면 항상 아들을 불렀다.
 
 지금 생각해보면 3평 남짓한 공간에서 4식구가 어떻게 지냈을까. 주인집에 놀러가는 아들을 보면서 여관을 청소하는 내내 아주머니는 불안했던 것 같다.
+
+admin
+https://github.com/bradtraversy/traversypress-ui/blob/main/img/screen.png

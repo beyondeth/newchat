@@ -9,6 +9,7 @@ import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { PostHogProvider } from "./providers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,21 +39,23 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-        <ReactQueryProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            // enableSystem
-            enableSystem={false}
-            disableTransitionOnChange
-          >
-            {children}
-            <Analytics />
-            <SpeedInsights />
-          </ThemeProvider>
-        </ReactQueryProvider>
-        <Toaster />
+        <PostHogProvider>
+          <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+          <ReactQueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              // enableSystem
+              enableSystem={false}
+              disableTransitionOnChange
+            >
+              {children}
+              <Analytics />
+              <SpeedInsights />
+            </ThemeProvider>
+          </ReactQueryProvider>
+          <Toaster />
+        </PostHogProvider>
       </body>
     </html>
   );

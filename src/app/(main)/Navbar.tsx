@@ -17,6 +17,9 @@ export default function Navbar() {
           <span>Community</span>
         </Link>
         <SearchField />
+        {/* <Link href="/admin">
+          <div>admin</div>
+        </Link> */}
 
         <UserButton className="sm:ms-auto" />
       </div>
