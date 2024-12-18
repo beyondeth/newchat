@@ -68,13 +68,13 @@ export async function submitPost(input: {
 
         return post;
       },
-      {
-        timeout: 5000, // 5초 타임아웃 설정
-      },
+      // {
+      //   timeout: 5000, // 5초 타임아웃 설정
+      // },
     );
 
     // 3. 캐시 갱신
-    revalidatePath("/");
+    // revalidatePath("/");
 
     return newPost;
   } catch (error) {

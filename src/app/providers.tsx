@@ -1,4 +1,5 @@
 // app/providers.tsx
+// Posthog
 "use client";
 
 import posthog from "posthog-js";
