@@ -27,10 +27,7 @@ export default function Page() {
               <span className="text-muted-foreground">
                 이미 계정이 있으신가요?
               </span>
-              <Link
-                href="/login"
-                className="text-[#F87A53] font-bold hover:underline"
-              >
+              <Link href="/login" className="font-bold hover:underline">
                 로그인
               </Link>
             </div>

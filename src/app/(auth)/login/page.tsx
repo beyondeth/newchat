@@ -1,6 +1,9 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import LoginForm from "./LoginForm";
+import GoogleSignInButton from "./google/GoogleSignInButton";
+import KakaoSignInButton from "./kakao/KakaoSignInButton";
+
 // import Image from "next/image";
 // import loginImage from "@/assets/login-image.jpg";
 
@@ -17,6 +20,13 @@ export default function Page() {
           <h1 className="text-center text-2xl font-bold">로그인</h1>
           <div className="space-y-5">
             <LoginForm />
+            <GoogleSignInButton />
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-muted"></div>
+              <span>or</span>
+              <div className="h-px flex-1 bg-muted"></div>
+            </div>
+            <KakaoSignInButton />
             {/* <Link href="/signup" className="block text-center hover:underline">
               계정이 없으신가요? 회원가입
             </Link> */}
