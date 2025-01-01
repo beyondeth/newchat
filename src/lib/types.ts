@@ -16,11 +16,16 @@ export function getUserDataSelect(loggedInUserId: string) {
         followerId: true,
       },
     },
+    postViews: {
+      select: {
+        postId: true,
+      },
+    },
     _count: {
       select: {
         posts: true,
         followers: true,
-        views: true,
+        postViews: true,
       },
     },
   } satisfies Prisma.UserSelect;
@@ -52,7 +57,6 @@ export function getPostDataInclude(loggedInUserId: string) {
         userId: true,
       },
     },
-    // views 필드 추가
     views: {
       where: {
         userId: loggedInUserId,

@@ -36,11 +36,11 @@ model User {
   following             Follow[]       @relation("Following")
   followers             Follow[]       @relation("Followers")
   likes                 Like[]
-  views View[]
   bookmarks             Bookmark[]
   comments              Comment[]
   receivedNotifications Notification[] @relation("Recipient")
   issuedNotifications   Notification[] @relation("Issuer")
+  postViews PostView[]  // 이 줄 추가
 
   createdAt DateTime @default(now())
 
@@ -73,7 +73,8 @@ model Post {
   user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   attachments         Media[]
   likes               Like[]
-  views View[]
+  views PostView[]
+  viewCount Int @default(0)
   bookmarks           Bookmark[]
   comments            Comment[]
   linkedNotifications Notification[]
@@ -123,18 +124,19 @@ model Like {
   @@map("likes")
 }
 
-model View {
+model PostView {
   id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id])
   postId    String
-  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  viewedAt  DateTime @default(now())
 
-  @@unique([userId, postId])
-  @@index([userId])
-  @@index([postId])
-  @@map("views")
+@@unique([postId, userId])
+  // @@unique([userId, postId])
+  // @@index([userId])
+  // @@index([postId])
+  // @@map("views")
 }
 
 model Bookmark {

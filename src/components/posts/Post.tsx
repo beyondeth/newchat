@@ -6,7 +6,7 @@ import { useSession } from "@/app/(main)/SessionProvider";
 import { PostData } from "@/lib/types";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { Media } from "@prisma/client";
-import { ChevronRight, MessageSquareText, X } from "lucide-react";
+import { ChevronRight, Eye, MessageSquareText, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef } from "react";
@@ -18,6 +18,7 @@ import BookmarkButton from "./BookmarkButton";
 import LikeButton from "./LikeButton";
 import PostMoreButton from "./PostMoreButton";
 import CommentButton from "../comments/CommentButton";
+import ShareButton from "../ShareButton";
 
 interface PostProps {
   post: PostData;
@@ -92,24 +93,27 @@ export default function Post({ post }: PostProps) {
             post={post}
             onClick={() => setShowComments(!showComments)}
           />
-          {/* <ViewCounter
+          {/* 조회수 */}
+          <div className="flex items-center gap-2">
+            <Eye className="size-4" />
+            <div className="text-xs font-medium tabular-nums">
+              {post.viewCount}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {" "}
+          {/* 수정된 부분 */}
+          <ShareButton postId={post.id} />
+          <BookmarkButton
             postId={post.id}
             initialState={{
-              views: post._count.views,
-              hasViewedByUser: post.views.some(
-                (view) => view.userId === user.id,
+              isBookmarkedByUser: post.bookmarks.some(
+                (bookmark) => bookmark.userId === user?.id,
               ),
             }}
-          /> */}
+          />
         </div>
-        <BookmarkButton
-          postId={post.id}
-          initialState={{
-            isBookmarkedByUser: post.bookmarks.some(
-              (bookmark) => bookmark.userId === user?.id,
-            ),
-          }}
-        />
       </div>
       {showComments && <Comments post={post} />}
     </article>

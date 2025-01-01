@@ -16,12 +16,61 @@ interface PageProps {
   params: { postId: string };
 }
 
+// const getPost = cache(async (postId: string, loggedInUserId: string) => {
+//   const post = await prisma.post.findUnique({
+//     where: {
+//       id: postId,
+//     },
+//     include: getPostDataInclude(loggedInUserId),
+//   });
+
+//   if (!post) notFound();
+
+//   return post;
+// });
+
 const getPost = cache(async (postId: string, loggedInUserId: string) => {
-  const post = await prisma.post.findUnique({
-    where: {
-      id: postId,
-    },
-    include: getPostDataInclude(loggedInUserId),
+  // 포스트 조회와 조회수 증가를 트랜잭션으로 처리
+  const post = await prisma.$transaction(async (tx) => {
+    // 먼저 포스트를 가져옴
+    const post = await tx.post.findUnique({
+      where: {
+        id: postId,
+      },
+      include: {
+        ...getPostDataInclude(loggedInUserId),
+        views: {
+          where: {
+            userId: loggedInUserId,
+          },
+        },
+      },
+    });
+
+    if (!post) notFound();
+
+    // 이 사용자가 아직 조회하지 않은 경우에만 조회수 증가
+    if (post.views.length === 0) {
+      // PostView 레코드 생성
+      await tx.postView.create({
+        data: {
+          postId: post.id,
+          userId: loggedInUserId,
+        },
+      });
+
+      // 전체 조회수 증가
+      await tx.post.update({
+        where: { id: post.id },
+        data: {
+          viewCount: {
+            increment: 1,
+          },
+        },
+      });
+    }
+
+    return post;
   });
 
   if (!post) notFound();
