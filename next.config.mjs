@@ -16,7 +16,12 @@ const nextConfig = {
         pathname: `/f/*`,
       },
       {
-        protocol: "https",
+        protocol: "http", // http도 추가
+        hostname: "k.kakaocdn.net",
+        pathname: "/**",
+      },
+      {
+        protocol: "https", // https도 추가
         hostname: "k.kakaocdn.net",
         pathname: "/**",
       },
