@@ -79,20 +79,20 @@ export default function NotificationsButton({
   return (
     <Button
       variant="ghost"
-      className="flex items-center justify-start gap-3"
+      className="flex items-center justify-start gap-3 hover:bg-transparent hover:opacity-100"
       title="Notifications"
       asChild
     >
       <Link href={isLoggedIn ? "/notifications" : "/login"}>
         <div className="relative">
-          <Bell />
+          <Bell className=" dark:text-gray-300 stroke-[2px] hover:opacity-100" />
           {isLoggedIn && !!data.unreadCount && (
             <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1 text-xs font-medium tabular-nums text-primary-foreground">
               {data.unreadCount}
             </span>
           )}
         </div>
-        <span className="hidden lg:inline">알림</span>
+        {/* <span className="hidden lg:inline">알림</span> */}
       </Link>
     </Button>
   );

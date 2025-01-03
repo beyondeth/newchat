@@ -91,7 +91,16 @@
 import { logout } from "@/app/(auth)/actions";
 import { useSession } from "@/app/(main)/SessionProvider";
 import { cn } from "@/lib/utils";
-import { Check, LogOutIcon, Monitor, Moon, Sun, UserIcon } from "lucide-react";
+import {
+  BookmarkPlus,
+  Check,
+  LogOutIcon,
+  MessageCircle,
+  Monitor,
+  Moon,
+  Sun,
+  UserIcon,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import {
@@ -146,6 +155,18 @@ export default function UserButton({ className }: UserButtonProps) {
           <DropdownMenuItem>
             <UserIcon className="mr-2 size-4" />
             프로필
+          </DropdownMenuItem>
+        </Link>
+        <Link href={`/messages`}>
+          <DropdownMenuItem>
+            <MessageCircle className="mr-2 size-4" />
+            채팅(유료)
+          </DropdownMenuItem>
+        </Link>
+        <Link href={`/bookmarks`}>
+          <DropdownMenuItem>
+            <BookmarkPlus className="mr-2 size-4" />
+            북마크
           </DropdownMenuItem>
         </Link>
         <DropdownMenuSub>
