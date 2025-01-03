@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import ThemeToggler from "./adminThemeToggler";
+import AdminThemeToggler from "./adminThemeToggler";
 
 const AdminNavbar = () => {
   return (
@@ -25,7 +25,7 @@ const AdminNavbar = () => {
       </Link>
 
       <div className="flex items-center">
-        <ThemeToggler />
+        <AdminThemeToggler />
         <DropdownMenu>
           <DropdownMenuTrigger className="focus:outline-none">
             <Avatar>
