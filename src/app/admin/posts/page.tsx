@@ -1,5 +1,5 @@
 import PostsTable from "@/components/adminPosts/PostsTable";
-import AdminBackButton from "../adminBackButton";
+import AdminBackButton from "../AdminBackButton";
 import PostsPagination from "@/components/adminPosts/PostsPagination";
 import prisma from "@/lib/prisma";
 import { getPostDataInclude } from "@/lib/types";
