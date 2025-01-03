@@ -1,4 +1,3 @@
-"use client";
 import { ArrowLeftCircle } from "lucide-react";
 import Link from "next/link";
 
@@ -7,7 +6,7 @@ interface BackButtonProps {
   link: string;
 }
 
-const AdminBackButton = ({ text, link }: BackButtonProps) => {
+export default function AdminBackButton({ text, link }: BackButtonProps) {
   return (
     <Link
       href={link}
@@ -16,6 +15,4 @@ const AdminBackButton = ({ text, link }: BackButtonProps) => {
       <ArrowLeftCircle size={18} /> {text}
     </Link>
   );
-};
-
-export default AdminBackButton;
+}

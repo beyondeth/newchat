@@ -1,4 +1,3 @@
-"use client";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "./img/adminlogo.png";
@@ -16,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import AdminThemeToggler from "./adminThemeToggler";
+import ThemeToggler from "./adminThemeToggler";
 
 const AdminNavbar = () => {
   return (
@@ -26,7 +25,7 @@ const AdminNavbar = () => {
       </Link>
 
       <div className="flex items-center">
-        <AdminThemeToggler />
+        <ThemeToggler />
         <DropdownMenu>
           <DropdownMenuTrigger className="focus:outline-none">
             <Avatar>

@@ -3,7 +3,8 @@ import PostsTable from "@/components/adminPosts/PostsTable";
 import PostsPagination from "@/components/adminPosts/PostsPagination";
 import prisma from "@/lib/prisma";
 import { getPostDataInclude } from "@/lib/types";
-import AdminBackButton from "../AdminBackButton";
+import { ArrowBigLeftDash } from "lucide-react";
+import AdminBackButton from "../adminBackButton";
 
 async function PostsPage() {
   // 서버에서 posts 데이터 가져오기
@@ -18,6 +19,7 @@ async function PostsPage() {
   return (
     <>
       <AdminBackButton text="Go Back" link="/admin" />
+
       <PostsTable posts={posts} />
       <PostsPagination />
     </>
