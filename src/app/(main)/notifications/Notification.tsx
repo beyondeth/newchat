@@ -15,19 +15,29 @@ export default function Notification({ notification }: NotificationProps) {
     { message: string; icon: JSX.Element; href: string }
   > = {
     FOLLOW: {
-      message: `${notification.issuer.displayName} followed you`,
+      message: `${notification.issuer.displayName}님이 팔로우했습니다`,
       icon: <User2 className="size-7 text-primary" />,
       href: `/users/${notification.issuer.username}`,
     },
     COMMENT: {
-      message: `${notification.issuer.displayName} commented on your post`,
+      message: `${notification.issuer.displayName}님이 포스트에 댓글을 남겼습니다`,
       icon: <MessageCircle className="size-7 fill-primary text-primary" />,
       href: `/posts/${notification.postId}`,
     },
     LIKE: {
-      message: `${notification.issuer.displayName} liked your post`,
+      message: `${notification.issuer.displayName}님이 포스트를 좋아합니다`,
       icon: <Heart className="size-7 fill-red-500 text-red-500" />,
       href: `/posts/${notification.postId}`,
+    },
+    BLOG_LIKE: {
+      message: `${notification.issuer.displayName}님이 블로그 포스트를 좋아합니다`,
+      icon: <Heart className="size-7 fill-red-500 text-red-500" />,
+      href: `/feature/blogpost/blog/${notification.blogPostId}`,
+    },
+    BLOG_COMMENT: {
+      message: `${notification.issuer.displayName}님이 블로그 포스트에 댓글을 남겼습니다`,
+      icon: <MessageCircle className="size-7 fill-primary text-primary" />,
+      href: `/feature/blogpost/blog/${notification.blogPostId}`,
     },
   };
 
@@ -51,6 +61,11 @@ export default function Notification({ notification }: NotificationProps) {
           {notification.post && (
             <div className="line-clamp-3 whitespace-pre-line text-muted-foreground">
               {notification.post.content}
+            </div>
+          )}
+          {notification.blogPost && (
+            <div className="line-clamp-3 whitespace-pre-line text-muted-foreground">
+              {notification.blogPost.title}
             </div>
           )}
         </div>
