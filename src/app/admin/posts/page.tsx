@@ -1,9 +1,7 @@
 import PostsTable from "@/components/adminPosts/PostsTable";
-
 import PostsPagination from "@/components/adminPosts/PostsPagination";
 import prisma from "@/lib/prisma";
 import { getPostDataInclude } from "@/lib/types";
-import { ArrowBigLeftDash } from "lucide-react";
 import AdminBackButton from "../adminBackButton";
 
 async function PostsPage() {

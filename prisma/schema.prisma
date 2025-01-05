@@ -21,6 +21,161 @@ datasource db {
   url  	    = env("DATABASE_URL")
 }
 
+
+// model User {
+//   id                    String         @id
+//   username              String         @unique
+//   displayName           String
+//   email                 String?        @unique
+//   passwordHash          String?
+//   googleId              String?        @unique
+//   kakaoId            String?        @unique
+//   avatarUrl             String?
+//   bio                   String?
+//   isAdmin Boolean @default(false)
+//   sessions              Session[]
+//   posts                 Post[]
+//   following             Follow[]       @relation("Following")
+//   followers             Follow[]       @relation("Followers")
+//   likes                 Like[]
+//   bookmarks             Bookmark[]
+//   comments              Comment[]
+//   receivedNotifications Notification[] @relation("Recipient")
+//   issuedNotifications   Notification[] @relation("Issuer")
+//   postViews PostView[]  // 이 줄 추가
+
+//   createdAt DateTime @default(now())
+
+//   @@map("users")
+// }
+
+// model Session {
+//   id        String   @id
+//   userId    String
+//   expiresAt DateTime
+//   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   @@map("sessions")
+// }
+
+// model Follow {
+//   followerId  String
+//   follower    User   @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+//   followingId String
+//   following   User   @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+//   @@unique([followerId, followingId])
+//   @@map("follows")
+// }
+
+// model Post {
+//   id                  String         @id @default(cuid())
+//   content             String
+//   userId              String
+//   user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   attachments         Media[]
+//   likes               Like[]
+//   views PostView[]
+//   viewCount Int @default(0)
+//   bookmarks           Bookmark[]
+//   comments            Comment[]
+//   linkedNotifications Notification[]
+
+//   createdAt DateTime @default(now())
+
+//   @@map("posts")
+// }
+
+// model Media {
+//   id     String    @id @default(cuid())
+//   postId String?
+//   post   Post?     @relation(fields: [postId], references: [id], onDelete: SetNull)
+//   type   MediaType
+//   url    String
+
+//   createdAt DateTime @default(now())
+
+//   @@map("post_media")
+// }
+
+// enum MediaType {
+//   IMAGE
+//   VIDEO
+// }
+
+// model Comment {
+//   id      String @id @default(cuid())
+//   content String
+//   userId  String
+//   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   postId  String
+//   post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+//   createdAt DateTime @default(now())
+
+//   @@map("comments")
+// }
+
+// model Like {
+//   userId String
+//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   postId String
+//   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+//   @@unique([userId, postId])
+//   @@map("likes")
+// }
+
+// model PostView {
+//   id        String   @id @default(cuid())
+//   post      Post     @relation(fields: [postId], references: [id])
+//   postId    String
+//   user      User     @relation(fields: [userId], references: [id])
+//   userId    String
+//   viewedAt  DateTime @default(now())
+
+// @@unique([postId, userId])
+//   // @@unique([userId, postId])
+//   // @@index([userId])
+//   // @@index([postId])
+//   // @@map("views")
+// }
+
+// model Bookmark {
+//   id     String @id @default(cuid())
+//   userId String
+//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   postId String
+//   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+//   createdAt DateTime @default(now())
+
+//   @@unique([userId, postId])
+//   @@map("bookmarks")
+// }
+
+// model Notification {
+//   id          String           @id @default(cuid())
+//   recipientId String
+//   recipient   User             @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+//   issuerId    String
+//   issuer      User             @relation("Issuer", fields: [issuerId], references: [id], onDelete: Cascade)
+//   postId      String?
+//   post        Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
+//   type        NotificationType
+//   read        Boolean          @default(false)
+
+//   createdAt DateTime @default(now())
+
+//   @@map("notifications")
+// }
+
+// enum NotificationType {
+//   LIKE
+//   FOLLOW
+//   COMMENT
+// }
+
 model User {
   id                    String         @id
   username              String         @unique
@@ -28,20 +183,25 @@ model User {
   email                 String?        @unique
   passwordHash          String?
   googleId              String?        @unique
-  kakaoId            String?        @unique
+  kakaoId               String?        @unique
   avatarUrl             String?
   bio                   String?
-  isAdmin Boolean @default(false)
+  isAdmin               Boolean        @default(false)
   sessions              Session[]
   posts                 Post[]
+  blogPosts             BlogPost[]
   following             Follow[]       @relation("Following")
   followers             Follow[]       @relation("Followers")
   likes                 Like[]
+  blogLikes             BlogLike[]
   bookmarks             Bookmark[]
+  blogBookmarks         BlogBookmark[]
   comments              Comment[]
+  blogComments          BlogComment[]
   receivedNotifications Notification[] @relation("Recipient")
   issuedNotifications   Notification[] @relation("Issuer")
-  postViews PostView[]  // 이 줄 추가
+  postViews             PostView[]
+  blogPostViews         BlogPostView[]
 
   createdAt DateTime @default(now())
 
@@ -74,8 +234,8 @@ model Post {
   user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   attachments         Media[]
   likes               Like[]
-  views PostView[]
-  viewCount Int @default(0)
+  views               PostView[]
+  viewCount           Int            @default(0)
   bookmarks           Bookmark[]
   comments            Comment[]
   linkedNotifications Notification[]
@@ -85,16 +245,50 @@ model Post {
   @@map("posts")
 }
 
-model Media {
-  id     String    @id @default(cuid())
-  postId String?
-  post   Post?     @relation(fields: [postId], references: [id], onDelete: SetNull)
-  type   MediaType
-  url    String
+model BlogPost {
+  id                  String           @id @default(cuid())
+  title               String
+  content             String           @db.Text
+  excerpt             String?
+  slug                String           @unique
+  userId              String
+  user                User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attachments         BlogMedia[]
+  likes               BlogLike[]
+  views               BlogPostView[]
+  viewCount           Int              @default(0)
+  bookmarks           BlogBookmark[]
+  comments            BlogComment[]
+  linkedNotifications Notification[]
+  published           Boolean          @default(false)
+  tags                String[]         @default([])
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("blog_posts")
+}
+
+model Media {
+  id        String    @id @default(cuid())
+  postId    String?
+  post      Post?     @relation(fields: [postId], references: [id], onDelete: SetNull)
+  type      MediaType
+  url       String
+  createdAt DateTime  @default(now())
 
   @@map("post_media")
+}
+
+model BlogMedia {
+  id        String    @id @default(cuid())
+  postId    String?
+  post      BlogPost? @relation(fields: [postId], references: [id], onDelete: SetNull)
+  type      MediaType
+  url       String
+  createdAt DateTime  @default(now())
+
+  @@map("blog_media")
 }
 
 enum MediaType {
@@ -103,26 +297,51 @@ enum MediaType {
 }
 
 model Comment {
-  id      String @id @default(cuid())
-  content String
-  userId  String
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  postId  String
-  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   @@map("comments")
 }
 
+model BlogComment {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parentId  String?
+  parent    BlogComment?  @relation("BlogCommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   BlogComment[] @relation("BlogCommentReplies")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("blog_comments")
+}
+
 model Like {
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  postId String
-  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
   @@map("likes")
+}
+
+model BlogLike {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@map("blog_likes")
 }
 
 model PostView {
@@ -133,24 +352,44 @@ model PostView {
   userId    String
   viewedAt  DateTime @default(now())
 
-@@unique([postId, userId])
-  // @@unique([userId, postId])
-  // @@index([userId])
-  // @@index([postId])
-  // @@map("views")
+  @@unique([postId, userId])
+  @@map("post_views")
+}
+
+model BlogPostView {
+  id        String   @id @default(cuid())
+  post      BlogPost @relation(fields: [postId], references: [id])
+  postId    String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  viewedAt  DateTime @default(now())
+
+  @@unique([postId, userId])
+  @@map("blog_post_views")
 }
 
 model Bookmark {
-  id     String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  postId String
-  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   @@unique([userId, postId])
   @@map("bookmarks")
+}
+
+model BlogBookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+  @@map("blog_bookmarks")
 }
 
 model Notification {
@@ -161,10 +400,11 @@ model Notification {
   issuer      User             @relation("Issuer", fields: [issuerId], references: [id], onDelete: Cascade)
   postId      String?
   post        Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
+  blogPostId  String?
+  blogPost    BlogPost?        @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
   type        NotificationType
   read        Boolean          @default(false)
-
-  createdAt DateTime @default(now())
+  createdAt   DateTime         @default(now())
 
   @@map("notifications")
 }
@@ -173,4 +413,6 @@ enum NotificationType {
   LIKE
   FOLLOW
   COMMENT
+  BLOG_LIKE
+  BLOG_COMMENT
 }
