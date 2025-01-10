@@ -162,6 +162,8 @@ export function getUserDataSelect(loggedInUserId: string) {
     avatarUrl: true,
     bio: true,
     createdAt: true,
+    googleId: true,
+    kakaoId: true,
     followers: {
       where: {
         followerId: loggedInUserId,

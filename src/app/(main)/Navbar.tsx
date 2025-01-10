@@ -121,6 +121,7 @@ import hashlogo from "@/assets/QQ.png";
 
 import prisma from "@/lib/prisma";
 import NotificationsButton from "./NotificationsButton";
+import BlogButton from "@/components/BlogButton";
 
 export default async function Navbar() {
   const { user } = await validateRequest();
@@ -152,7 +153,7 @@ export default async function Navbar() {
             initialState={{ unreadCount: unreadNotificationCount }}
             isLoggedIn={!!user}
           />
-
+          <BlogButton />
           <UserButton className="sm:ms-auto" />
         </div>
       </div>

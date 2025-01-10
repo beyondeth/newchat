@@ -47,3 +47,13 @@ export const createCommentSchema = z.object({
   content: requiredString,
   //test
 });
+
+// 유저 계정 삭제
+export const deleteAccountSchema = z.object({
+  password: requiredString
+    .regex(/^.{8,30}$/, "비밀번호는 최소 8자 이상 최대 30자 이하여야 합니다.")
+    .regex(/.*[A-Z].*/, "비밀번호는 최소 1개의 대문자를 포함해야 합니다.")
+    .regex(/.*[@#$&*].*/, "비밀번호는 특수문자(@,#,$,&,*)를 포함해야 합니다."),
+});
+
+export type DeleteAccountValues = z.infer<typeof deleteAccountSchema>;
