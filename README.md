@@ -219,3 +219,6 @@ attachments image 크기 32mb 까지 제한.
 
 admin
 https://github.com/bradtraversy/traversypress-ui/blob/main/img/screen.png
+
+blogpost
+https://www.youtube.com/watch?v=hP0TcRcr95Q

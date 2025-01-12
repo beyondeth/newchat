@@ -34,6 +34,14 @@ export type LoginValues = z.infer<typeof loginSchema>;
 export const createPostSchema = z.object({
   content: requiredString,
   mediaIds: z.array(z.string()).max(5, "5개까지만 업로드 가능합니다"),
+  booktitle: z
+    .string()
+    .max(15, "책 제목은 15자 이내로 입력해주세요.")
+    .optional(),
+  bookauthor: z
+    .string()
+    .max(15, "저자 이름은 15자 이내로 입력해주세요.")
+    .optional(),
 });
 
 export const updateUserProfileSchema = z.object({

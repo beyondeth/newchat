@@ -1,7 +1,6 @@
 "use client";
-
+import "./editor.css";
 import { useState } from "react";
-
 import {
   EditorCommand,
   EditorCommandEmpty,
@@ -81,7 +80,7 @@ export default function Editor({ initialValue, onChange }: EditorProps) {
               handleImageDrop(view, event, moved, uploadFn),
             attributes: {
               class:
-                "prose dark:prose-invert prose-headings:font-title font-default focus:outline-none max-w-full",
+                "prose dark:prose-invert prose-headings:font-title prose-h1:text-4xl prose-h1:font-bold prose-h2:text-3xl prose-h2:font-semibold prose-h3:text-2xl prose-h3:font-semibold font-default focus:outline-none max-w-full ",
             },
           }}
           onUpdate={({ editor }) => {

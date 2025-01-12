@@ -1,0 +1,15 @@
+/* src/components/editor/editor.css */
+.prose h1 {
+  font-size: 2.25rem !important; /* 36px */
+  font-weight: 700 !important;
+}
+
+.prose h2 {
+  font-size: 1.875rem !important; /* 30px */
+  font-weight: 600 !important;
+}
+
+.prose h3 {
+  font-size: 1.5rem !important; /* 24px */
+  font-weight: 600 !important;
+}

@@ -9,11 +9,17 @@ const nextConfig = {
 
   serverExternalPackages: ["@node-rs/argon2"],
   images: {
+    domains: ["utfs.io"],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "utfs.io",
         pathname: `/f/*`,
+      },
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+        pathname: `/a/*`, // '/a/' 경로 추가
       },
       {
         protocol: "http", // http도 추가

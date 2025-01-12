@@ -238,9 +238,18 @@ model Post {
   viewCount           Int            @default(0)
   bookmarks           Bookmark[]
   comments            Comment[]
+  booktitle String?
+  bookauthor String?
   linkedNotifications Notification[]
 
   createdAt DateTime @default(now())
+
+  // 인용 관련 필드 추가 ( 나중에 구현 )
+  quotedPostId  String?
+  quotedPost    Post?     @relation("QuotedPosts", fields: [quotedPostId], references: [id])
+  quotedByPosts Post[]    @relation("QuotedPosts")
+  
+  @@index([quotedPostId])
 
   @@map("posts")
 }
@@ -346,9 +355,9 @@ model BlogLike {
 
 model PostView {
   id        String   @id @default(cuid())
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   viewedAt  DateTime @default(now())
 

@@ -153,7 +153,7 @@ export default async function Navbar() {
             initialState={{ unreadCount: unreadNotificationCount }}
             isLoggedIn={!!user}
           />
-          <BlogButton />
+          {/* <BlogButton /> */}
           <UserButton className="sm:ms-auto" />
         </div>
       </div>

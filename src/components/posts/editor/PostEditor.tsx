@@ -10,17 +10,21 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { ImageIcon, Loader2, X } from "lucide-react";
 import Image from "next/image";
-import { ClipboardEvent, useRef } from "react";
+import { ClipboardEvent, useRef, useState } from "react";
 import { useSubmitPostMutation } from "./mutations";
 import "./styles.css";
 import useMediaUpload, { Attachment } from "./useMediaUpload";
 import { useDropzone } from "@uploadthing/react";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 export default function PostEditor() {
   const { user } = useSession();
   const router = useRouter();
   const mutation = useSubmitPostMutation();
+
+  const [booktitle, setBookTitle] = useState("");
+  const [bookauthor, setBookAuthor] = useState("");
 
   const {
     startUpload,
@@ -73,6 +77,8 @@ export default function PostEditor() {
       {
         content: input,
         mediaIds: attachments.map((a) => a.mediaId).filter(Boolean) as string[],
+        booktitle: booktitle || undefined, // 선택적 필드
+        bookauthor: bookauthor || undefined, // 선택적 필드
       },
       {
         onSuccess: () => {
@@ -88,6 +94,21 @@ export default function PostEditor() {
       <div className="flex gap-5">
         <UserAvatar avatarUrl={user?.avatarUrl} className="hidden sm:inline" />
         <div {...rootProps} className="w-full">
+          {/* 책 제목과 저자 입력 필드 추가 */}
+          <div className="flex gap-3 mb-3">
+            <Input
+              placeholder="책 제목 (선택사항)"
+              value={booktitle}
+              onChange={(e) => setBookTitle(e.target.value)}
+              className="text-sm"
+            />
+            <Input
+              placeholder="저자 (선택사항)"
+              value={bookauthor}
+              onChange={(e) => setBookAuthor(e.target.value)}
+              className="text-sm"
+            />
+          </div>
           <EditorContent
             editor={editor}
             className={cn(
