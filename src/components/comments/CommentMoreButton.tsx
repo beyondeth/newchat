@@ -10,9 +10,10 @@ import {
 } from "../ui/dropdown-menu";
 import DeleteCommentDialog from "./DeleteCommentDialog";
 import EditCommentDialog from "./EditCommentDialog";
+import { CommentWithoutPost } from "@/lib/types";
 
 interface CommentMoreButtonProps {
-  comment: CommentData;
+  comment: CommentWithoutPost;
   className?: string;
 }
 

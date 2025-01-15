@@ -595,6 +595,312 @@
 
 // 더보기 기능 //
 
+// "use client";
+
+// import { useSession } from "@/app/(main)/SessionProvider";
+// import { PostData } from "@/lib/types";
+// import { cn, formatRelativeDate } from "@/lib/utils";
+// import { Media } from "@prisma/client";
+// import { ChevronRight, Eye, MessageSquareText, X } from "lucide-react";
+// import Image from "next/image";
+// import Link from "next/link";
+// import { useState, useRef } from "react";
+// import Comments from "../comments/Comments";
+// import Linkify from "../Linkify";
+// import UserAvatar from "../UserAvatar";
+// import UserTooltip from "../UserTooltip";
+// import BookmarkButton from "./BookmarkButton";
+// import LikeButton from "./LikeButton";
+// import PostMoreButton from "./PostMoreButton";
+// import CommentButton from "../comments/CommentButton";
+// import ShareButton from "../ShareButton";
+
+// interface PostProps {
+//   post: PostData;
+// }
+
+// export default function Post({ post }: PostProps) {
+//   const { user } = useSession();
+//   const [showComments, setShowComments] = useState(false);
+//   const [isExpanded, setIsExpanded] = useState(false);
+
+//   // 800자 초과 여부 확인
+//   const isContentLong = post.content.length > 400;
+//   // 표시할 내용 계산
+//   const displayContent = isExpanded ? post.content : post.content.slice(0, 400);
+
+//   return (
+//     <article className="group/post space-y-3 rounded-2xl bg-card p-5 shadow-sm">
+//       <div className="flex justify-between gap-3">
+//         <div className="flex flex-wrap gap-3">
+//           <UserTooltip user={post.user}>
+//             <Link href={user ? `/users/${post.user.username}` : "/login"}>
+//               <UserAvatar avatarUrl={post.user.avatarUrl} />
+//             </Link>
+//           </UserTooltip>
+//           <div>
+//             <div className="flex items-center gap-3">
+//               <UserTooltip user={post.user}>
+//                 <Link
+//                   href={user ? `/users/${post.user.username}` : "/login"}
+//                   className="block font-medium text-sm hover:underline"
+//                 >
+//                   {post.user.displayName}
+//                 </Link>
+//               </UserTooltip>
+//             </div>
+//             <div className="block text-xs text-muted-foreground">
+//               {formatRelativeDate(post.createdAt)}
+//             </div>
+//           </div>
+//         </div>
+//         <div className="flex items-center gap-3">
+//           <div className="flex flex-col items-end">
+//             {post.booktitle && (
+//               <div className="text-sm text-muted-foreground">
+//                 &ldquo;{post.booktitle}&rdquo;
+//               </div>
+//             )}
+//             {post.bookauthor && (
+//               <div className="text-xs text-muted-foreground">
+//                 -{post.bookauthor}-
+//               </div>
+//             )}
+//           </div>
+//           {post.user.id === user?.id && (
+//             <PostMoreButton
+//               post={post}
+//               className="opacity-0 transition-opacity group-hover/post:opacity-100"
+//             />
+//           )}
+//         </div>
+//       </div>
+//       <Link
+//         href={user ? `/posts/${post.id}` : "/login"}
+//         className="block text-sm"
+//         suppressHydrationWarning
+//       >
+//         <Linkify>
+//           <div className="whitespace-pre-line break-words">
+//             {displayContent}
+//             {isContentLong && !isExpanded && "..."}
+//           </div>
+//         </Linkify>
+//       </Link>
+//       {isContentLong && (
+//         <button
+//           onClick={() => setIsExpanded(!isExpanded)}
+//           className="text-sm text-muted-foreground hover:underline"
+//         >
+//           {isExpanded ? "접기" : "더보기"}
+//         </button>
+//       )}
+//       {!!post.attachments.length && (
+//         <MediaPreviews attachments={post.attachments} />
+//       )}
+//       <hr className="text-muted-foreground" />
+//       <div className="flex justify-between gap-5">
+//         <div className="flex items-center gap-5 ">
+//           <LikeButton
+//             postId={post.id}
+//             initialState={{
+//               likes: post._count.likes,
+//               isLikedByUser: post.likes.some(
+//                 (like) => like.userId === user?.id,
+//               ),
+//             }}
+//           />
+//           <CommentButton
+//             post={post}
+//             onClick={() => setShowComments(!showComments)}
+//           />
+//           <div className="flex items-center gap-2">
+//             <Eye className="size-4" />
+//             <div className="text-xs font-medium tabular-nums">
+//               {post.viewCount}
+//             </div>
+//           </div>
+//         </div>
+//         <div className="flex items-center gap-2">
+//           <ShareButton postId={post.id} />
+//           <BookmarkButton
+//             postId={post.id}
+//             initialState={{
+//               isBookmarkedByUser: post.bookmarks.some(
+//                 (bookmark) => bookmark.userId === user?.id,
+//               ),
+//             }}
+//           />
+//         </div>
+//       </div>
+//       {showComments && <Comments post={post} />}
+//     </article>
+//   );
+// }
+
+// interface MediaPreviewsProps {
+//   attachments: Media[];
+// }
+
+// function MediaPreviews({ attachments }: MediaPreviewsProps) {
+//   const containerRef = useRef<HTMLDivElement>(null);
+//   const [showRightButton, setShowRightButton] = useState(false);
+//   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
+
+//   const handleScroll = () => {
+//     if (containerRef.current) {
+//       const { scrollLeft, scrollWidth, clientWidth } = containerRef.current;
+//       setShowRightButton(scrollLeft + clientWidth < scrollWidth);
+//     }
+//   };
+
+//   const scrollRight = () => {
+//     if (containerRef.current) {
+//       containerRef.current.scrollBy({ left: 210, behavior: "smooth" });
+//     }
+//   };
+
+//   const handleMediaClick = (media: Media) => {
+//     setSelectedMedia(media);
+//   };
+
+//   const handleCloseModal = () => {
+//     setSelectedMedia(null);
+//   };
+
+//   return (
+//     <div className="relative">
+//       <div
+//         ref={containerRef}
+//         className={cn(
+//           "flex gap-1 overflow-x-auto scrollbar-hide",
+//           attachments.length >= 3 && "flex-nowrap",
+//         )}
+//         onScroll={handleScroll}
+//       >
+//         {attachments.map((m, index) => (
+//           <MediaPreview
+//             key={m.id}
+//             media={m}
+//             totalCount={attachments.length}
+//             index={index}
+//             onClick={() => handleMediaClick(m)}
+//           />
+//         ))}
+//       </div>
+//       {attachments.length >= 2 && showRightButton && (
+//         <button
+//           onClick={scrollRight}
+//           className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
+//         >
+//           <ChevronRight size={24} />
+//         </button>
+//       )}
+//       {selectedMedia && (
+//         <MediaModal media={selectedMedia} onClose={handleCloseModal} />
+//       )}
+//     </div>
+//   );
+// }
+
+// interface MediaPreviewProps {
+//   media: Media;
+//   totalCount: number;
+//   index: number;
+//   onClick: () => void;
+// }
+
+// function MediaPreview({
+//   media,
+//   totalCount,
+//   index,
+//   onClick,
+// }: MediaPreviewProps) {
+//   let width, height;
+//   if (totalCount === 1) {
+//     width = 543;
+//     height = 300;
+//   } else if (totalCount === 2) {
+//     width = 543;
+//     height = 300;
+//   } else {
+//     width = 210;
+//     height = 280;
+//   }
+
+//   if (media.type === "IMAGE") {
+//     return (
+//       <Image
+//         src={media.url}
+//         alt={`Attachment ${index + 1}`}
+//         width={width}
+//         height={height}
+//         className={cn(
+//           "rounded-2xl object-cover cursor-pointer",
+//           totalCount >= 3 && "flex-shrink-0",
+//         )}
+//         style={{ width, height }}
+//         onClick={onClick}
+//       />
+//     );
+//   }
+
+//   if (media.type === "VIDEO") {
+//     return (
+//       <video
+//         src={media.url}
+//         controls
+//         className={cn(
+//           "rounded-2xl object-cover cursor-pointer",
+//           totalCount >= 3 && "flex-shrink-0",
+//         )}
+//         style={{ width, height }}
+//         onClick={onClick}
+//       />
+//     );
+//   }
+
+//   return <p className="text-destructive">Unsupported media type</p>;
+// }
+
+// interface MediaModalProps {
+//   media: Media;
+//   onClose: () => void;
+// }
+
+// function MediaModal({ media, onClose }: MediaModalProps) {
+//   return (
+//     <div
+//       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50"
+//       onClick={onClose}
+//     >
+//       <div
+//         className="relative max-w-3xl max-h-[90vh] p-4 bg-white rounded-lg shadow-lg overflow-auto"
+//         onClick={(e) => e.stopPropagation()}
+//       >
+//         <button
+//           className="absolute top-2 right-2 text-black bg-white rounded-full p-1"
+//           onClick={onClose}
+//         >
+//           <X size={24} />
+//         </button>
+//         {media.type === "IMAGE" && (
+//           <Image
+//             src={media.url}
+//             alt="Attachment"
+//             width={640}
+//             height={640}
+//             className="max-w-full max-h-full object-contain"
+//           />
+//         )}
+//         {media.type === "VIDEO" && (
+//           <video src={media.url} controls className="max-w-full max-h-full" />
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
 "use client";
 
 import { useSession } from "@/app/(main)/SessionProvider";
@@ -612,7 +918,7 @@ import UserTooltip from "../UserTooltip";
 import BookmarkButton from "./BookmarkButton";
 import LikeButton from "./LikeButton";
 import PostMoreButton from "./PostMoreButton";
-import CommentButton from "../comments/CommentButton";
+import CommentButton from "../comments/CommentButton"; // 새로 추가된 import
 import ShareButton from "../ShareButton";
 
 interface PostProps {
@@ -699,8 +1005,10 @@ export default function Post({ post }: PostProps) {
         <MediaPreviews attachments={post.attachments} />
       )}
       <hr className="text-muted-foreground" />
+
+      {/* 댓글 버튼과 관련 기능 수정 */}
       <div className="flex justify-between gap-5">
-        <div className="flex items-center gap-5 ">
+        <div className="flex items-center gap-5">
           <LikeButton
             postId={post.id}
             initialState={{
@@ -710,6 +1018,7 @@ export default function Post({ post }: PostProps) {
               ),
             }}
           />
+          {/* CommentButton 컴포넌트로 변경 */}
           <CommentButton
             post={post}
             onClick={() => setShowComments(!showComments)}
@@ -733,7 +1042,13 @@ export default function Post({ post }: PostProps) {
           />
         </div>
       </div>
-      {showComments && <Comments post={post} />}
+
+      {/* 댓글 섹션 수정 */}
+      {showComments && (
+        <div className="border-t pt-3">
+          <Comments post={post} />
+        </div>
+      )}
     </article>
   );
 }

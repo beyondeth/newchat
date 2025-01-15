@@ -10,9 +10,10 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { useDeleteCommentMutation } from "./mutations";
+import { CommentWithoutPost } from "@/lib/types"; // 타입 import 추가
 
 interface DeleteCommentDialogProps {
-  comment: CommentData;
+  comment: CommentWithoutPost; // 타입 수정
   open: boolean;
   onClose: () => void;
 }

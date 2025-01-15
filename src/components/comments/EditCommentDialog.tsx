@@ -93,13 +93,13 @@ import {
 import { useEditCommentMutation } from "./mutations";
 import { useState } from "react";
 import { Textarea } from "../ui/textarea";
+import { CommentWithoutPost } from "@/lib/types"; // 타입 import 추가
 
 interface EditCommentDialogProps {
-  comment: CommentData;
+  comment: CommentWithoutPost; // 타입 수정
   open: boolean;
   onClose: () => void;
 }
-
 export default function EditCommentDialog({
   comment,
   open,
