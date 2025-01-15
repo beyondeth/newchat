@@ -307,13 +307,14 @@ enum MediaType {
 
 model Comment {
   id        String   @id @default(cuid())
-  content   String
+  content   String?  // null 허용
+  deleted   Boolean  @default(false)
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   postId    String
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  parentId  String?   // 부모 댓글 ID
-  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
+  parentId  String?
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
   replies   Comment[] @relation("CommentReplies")
   createdAt DateTime @default(now())
 
