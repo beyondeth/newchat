@@ -42,6 +42,7 @@ export const createPostSchema = z.object({
     .string()
     .max(15, "저자 이름은 15자 이내로 입력해주세요.")
     .optional(),
+  youtubeLinks: z.array(z.string()).optional(),
 });
 
 export const updateUserProfileSchema = z.object({

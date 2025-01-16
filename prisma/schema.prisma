@@ -241,6 +241,7 @@ model Post {
   booktitle String?
   bookauthor String?
   linkedNotifications Notification[]
+  youtubeLinks String[] @default([])
 
   createdAt DateTime @default(now())
 
