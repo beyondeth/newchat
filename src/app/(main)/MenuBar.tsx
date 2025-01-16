@@ -145,6 +145,7 @@ import { Button } from "@/components/ui/button";
 import { BookmarkPlus, Home, MessageCircle, PenSquare } from "lucide-react";
 import Link from "next/link";
 import NotificationsButton from "./NotificationsButton";
+import WriteButton from "@/components/WriteButton";
 
 interface MenuBarProps {
   className?: string;
@@ -178,7 +179,7 @@ export default async function MenuBar({
         asChild
       >
         <Link href="/">
-          <PenSquare />
+          <WriteButton />
         </Link>
       </Button>
       {/* <NotificationsButton
