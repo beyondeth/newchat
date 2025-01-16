@@ -627,93 +627,717 @@
 //   );
 // }
 
-import { CommentsPage, PostData, CommentData } from "@/lib/types";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
-import Comment from "./Comment";
+// import { useSession } from "@/app/(main)/SessionProvider";
+// import { CommentData, PostData } from "@/lib/types";
+// import { formatRelativeDate } from "@/lib/utils";
+// import { MessageSquare } from "lucide-react";
+// import Link from "next/link";
+// import { useState } from "react";
+// import UserAvatar from "../UserAvatar";
+// import UserTooltip from "../UserTooltip";
+// import CommentInput from "./CommentInput";
+// import CommentMoreButton from "./CommentMoreButton";
+
+// type CommentWithoutPost = Omit<CommentData, "post">;
+
+// interface CommentProps {
+//   comment: CommentWithoutPost;
+//   post: PostData;
+//   level: number;
+// }
+
+// export default function Comment({ comment, post, level }: CommentProps) {
+//   const { user } = useSession();
+//   const [showReplyInput, setShowReplyInput] = useState(false);
+//   const [showReplies, setShowReplies] = useState(false);
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   const canReply = !!user;
+
+//   const handleReplySubmit = async () => {
+//     setIsLoading(true);
+//     try {
+//       setShowReplyInput(false);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   // 삭제된 댓글 여부 확인
+//   const isDeleted = comment.deleted || !comment.content;
+
+//   // 사용자 정보가 없는 경우 기본값 제공
+//   const commentUser = comment.user || {
+//     username: "unknown",
+//     displayName: "알 수 없는 사용자",
+//     avatarUrl: "/default-avatar.png",
+//   };
+
+//   // 보여줄 수 있는 답글 개수 계산
+//   const visibleRepliesCount =
+//     comment.replies?.filter(
+//       (reply) => !reply.deleted || (reply.deleted && reply.replies?.length > 0),
+//     ).length || 0;
+
+//   // 삭제된 댓글이고 자식 댓글도 없으면 null 반환
+//   if (isDeleted && !visibleRepliesCount) {
+//     return null;
+//   }
+
+//   return (
+//     <div className="py-3">
+//       <div style={{ paddingLeft: `${level * 20}px` }}>
+//         <div className="group/comment flex gap-3">
+//           <div className="flex-shrink-0">
+//             <UserTooltip user={commentUser}>
+//               <Link href={`/users/${commentUser.username}`}>
+//                 <UserAvatar avatarUrl={commentUser.avatarUrl} size={32} />
+//               </Link>
+//             </UserTooltip>
+//           </div>
+
+//           <div className="flex-1 space-y-1">
+//             <div className="flex items-center gap-2">
+//               <UserTooltip user={commentUser}>
+//                 <Link
+//                   href={`/users/${commentUser.username}`}
+//                   className="font-medium hover:underline"
+//                 >
+//                   {commentUser.displayName}
+//                 </Link>
+//               </UserTooltip>
+//               <span className="text-sm text-muted-foreground">
+//                 {formatRelativeDate(comment.createdAt)}
+//               </span>
+//             </div>
+
+//             <div
+//               className={`text-sm ${isDeleted ? "text-muted-foreground italic" : ""}`}
+//             >
+//               {isDeleted ? "댓글이 삭제되었습니다" : comment.content}
+//             </div>
+
+//             <div className="flex items-center gap-4">
+//               {canReply && !isDeleted && (
+//                 <button
+//                   onClick={() => setShowReplyInput(!showReplyInput)}
+//                   className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+//                   disabled={isLoading}
+//                 >
+//                   <MessageSquare className="h-3 w-3" />
+//                   {isLoading ? "처리 중..." : "답글달기"}
+//                 </button>
+//               )}
+//             </div>
+//           </div>
+
+//           {user?.id === commentUser.id && !isDeleted && (
+//             <CommentMoreButton
+//               comment={comment}
+//               className="opacity-0 transition-opacity group-hover/comment:opacity-100"
+//             />
+//           )}
+//         </div>
+
+//         {showReplyInput && !isDeleted && (
+//           <div className="ml-8 mt-2">
+//             <CommentInput
+//               post={post}
+//               parentId={comment.id}
+//               onSuccess={handleReplySubmit}
+//               placeholder={`${commentUser.displayName}님에게 답글 쓰기...`}
+//             />
+//           </div>
+//         )}
+
+//         {/* 답글 더보기 버튼 */}
+//         {visibleRepliesCount > 0 && !isDeleted && (
+//           <div className="ml-8 mt-2">
+//             <button
+//               onClick={() => setShowReplies(!showReplies)}
+//               className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700"
+//             >
+//               <svg
+//                 className={`h-4 w-4 transform transition-transform ${
+//                   showReplies ? "rotate-180" : ""
+//                 }`}
+//                 fill="none"
+//                 stroke="currentColor"
+//                 viewBox="0 0 24 24"
+//               >
+//                 <path
+//                   strokeLinecap="round"
+//                   strokeLinejoin="round"
+//                   strokeWidth={2}
+//                   d={showReplies ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
+//                 />
+//               </svg>
+//               {showReplies
+//                 ? "답글 숨기기"
+//                 : `답글 ${visibleRepliesCount}개 보기`}
+//             </button>
+//           </div>
+//         )}
+
+//         {/* 답글 목록 */}
+//         {showReplies && comment.replies && (
+//           <div className="mt-2 space-y-3">
+//             {comment.replies
+//               .filter(
+//                 (reply) =>
+//                   !reply.deleted ||
+//                   (reply.deleted && reply.replies?.length > 0),
+//               )
+//               .map((reply) => (
+//                 <Comment
+//                   key={reply.id}
+//                   comment={reply as CommentWithoutPost}
+//                   post={post}
+//                   level={level + 1}
+//                 />
+//               ))}
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+// import { useSession } from "@/app/(main)/SessionProvider";
+// import { CommentData, PostData } from "@/lib/types";
+// import { formatRelativeDate } from "@/lib/utils";
+// import { MessageSquare } from "lucide-react";
+// import Link from "next/link";
+// import { useState } from "react";
+// import UserAvatar from "../UserAvatar";
+// import UserTooltip from "../UserTooltip";
+// import CommentInput from "./CommentInput";
+// import CommentMoreButton from "./CommentMoreButton";
+// import avatarPlaceholder from "@/assets/avatar-placeholder.png";
+
+// type CommentWithoutPost = Omit<CommentData, "post">;
+
+// interface CommentProps {
+//   comment: CommentWithoutPost;
+//   post: PostData;
+//   level: number;
+// }
+
+// export default function Comment({ comment, post, level }: CommentProps) {
+//   const { user } = useSession();
+//   const [showReplyInput, setShowReplyInput] = useState(false);
+//   const [showReplies, setShowReplies] = useState(false);
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   // parent가 null인 경우에만 부모 댓글로 간주
+//   const isParentComment = !comment.parent;
+//   const canReply = !!user && isParentComment;
+
+//   const handleReplySubmit = async () => {
+//     setIsLoading(true);
+//     try {
+//       setShowReplyInput(false);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   // 삭제된 댓글 여부 확인
+//   const isDeleted = comment.deleted || !comment.content;
+
+//   // 사용자 정보가 없는 경우 기본값 제공
+//   const commentUser = comment.user || {
+//     username: "unknown",
+//     displayName: "알 수 없는 사용자",
+//     avatarUrl: avatarPlaceholder,
+//   };
+
+//   // 보여줄 수 있는 답글 개수 계산
+//   const visibleRepliesCount =
+//     comment.replies?.filter(
+//       (reply) => !reply.deleted || (reply.deleted && reply.replies?.length > 0),
+//     ).length || 0;
+
+//   // 삭제된 댓글이고 자식 댓글도 없으면 null 반환
+//   if (isDeleted && !visibleRepliesCount) {
+//     return null;
+//   }
+
+//   return (
+//     <div className="py-3">
+//       <div className={`${isParentComment ? "" : "ml-12"}`}>
+//         <div className="group/comment flex gap-3">
+//           <div className="flex-shrink-0">
+//             <UserTooltip user={commentUser}>
+//               <Link href={`/users/${commentUser.username}`}>
+//                 <UserAvatar avatarUrl={commentUser.avatarUrl} size={32} />
+//               </Link>
+//             </UserTooltip>
+//           </div>
+
+//           <div className="flex-1 space-y-1">
+//             <div className="flex items-center gap-2">
+//               <UserTooltip user={commentUser}>
+//                 <Link
+//                   href={`/users/${commentUser.username}`}
+//                   className="font-medium hover:underline"
+//                 >
+//                   {commentUser.displayName}
+//                 </Link>
+//               </UserTooltip>
+//               <span className="text-sm text-muted-foreground">
+//                 {formatRelativeDate(comment.createdAt)}
+//               </span>
+//             </div>
+
+//             <div
+//               className={`text-sm ${isDeleted ? "text-muted-foreground italic" : ""}`}
+//             >
+//               {isDeleted ? "댓글이 삭제되었습니다" : comment.content}
+//             </div>
+
+//             {/* 부모 댓글에만 답글달기 버튼 표시 */}
+//             {canReply && !isDeleted && (
+//               <button
+//                 onClick={() => setShowReplyInput(!showReplyInput)}
+//                 className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+//                 disabled={isLoading}
+//               >
+//                 <MessageSquare className="h-3 w-3" />
+//                 {isLoading ? "처리 중..." : "답글달기"}
+//               </button>
+//             )}
+//           </div>
+
+//           {user?.id === commentUser.id && !isDeleted && (
+//             <CommentMoreButton
+//               comment={comment}
+//               className="opacity-0 transition-opacity group-hover/comment:opacity-100"
+//             />
+//           )}
+//         </div>
+
+//         {/* 답글 입력 폼 (부모 댓글에만 표시) */}
+//         {showReplyInput && !isDeleted && isParentComment && (
+//           <div className="ml-8 mt-2">
+//             <CommentInput
+//               post={post}
+//               parentId={comment.id}
+//               onSuccess={handleReplySubmit}
+//               placeholder={`${commentUser.displayName}님에게 답글 쓰기...`}
+//             />
+//           </div>
+//         )}
+
+//         {/* 부모 댓글이고 답글이 있는 경우에만 답글 더보기 버튼 표시 */}
+//         {isParentComment && visibleRepliesCount > 0 && !isDeleted && (
+//           <div className="ml-8 mt-2">
+//             <button
+//               onClick={() => setShowReplies(!showReplies)}
+//               className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700"
+//             >
+//               <svg
+//                 className={`h-4 w-4 transform transition-transform ${
+//                   showReplies ? "rotate-180" : ""
+//                 }`}
+//                 fill="none"
+//                 stroke="currentColor"
+//                 viewBox="0 0 24 24"
+//               >
+//                 <path
+//                   strokeLinecap="round"
+//                   strokeLinejoin="round"
+//                   strokeWidth={2}
+//                   d={showReplies ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
+//                 />
+//               </svg>
+//               {showReplies
+//                 ? "답글 숨기기"
+//                 : `답글 ${visibleRepliesCount}개 보기`}
+//             </button>
+//           </div>
+//         )}
+
+//         {/* 답글 목록 */}
+//         {showReplies && comment.replies && isParentComment && (
+//           <div className="mt-2 space-y-3">
+//             {comment.replies
+//               .filter(
+//                 (reply) =>
+//                   !reply.deleted ||
+//                   (reply.deleted && reply.replies?.length > 0),
+//               )
+//               .map((reply) => (
+//                 <Comment
+//                   key={reply.id}
+//                   comment={reply as CommentWithoutPost}
+//                   post={post}
+//                   level={1} // 자식 댓글은 항상 level 1
+//                 />
+//               ))}
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+// ### //
+// import { useSession } from "@/app/(main)/SessionProvider";
+// import { CommentData, PostData } from "@/lib/types";
+// import { formatRelativeDate } from "@/lib/utils";
+// import { MessageSquare } from "lucide-react";
+// import Link from "next/link";
+// import { useState } from "react";
+// import UserAvatar from "../UserAvatar";
+// import UserTooltip from "../UserTooltip";
+// import CommentInput from "./CommentInput";
+// import CommentMoreButton from "./CommentMoreButton";
+
+// type CommentWithoutPost = Omit<CommentData, "post">;
+
+// interface CommentProps {
+//   comment: CommentWithoutPost;
+//   post: PostData;
+//   level: number;
+// }
+
+// export default function Comment({ comment, post, level }: CommentProps) {
+//   const { user } = useSession();
+//   const [showReplyInput, setShowReplyInput] = useState(false);
+//   const [showReplies, setShowReplies] = useState(false);
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   // 부모 댓글인지 확인 (parentId가 없는 경우가 부모 댓글)
+//   const isParentComment = !comment.parent;
+//   const canReply = !!user && isParentComment; // 부모 댓글에만 답글 달기 허용
+
+//   const handleReplySubmit = async () => {
+//     setIsLoading(true);
+//     try {
+//       setShowReplyInput(false);
+//       setShowReplies(true); // 답글 입력 후 자동으로 답글 목록 표시
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   // 삭제된 댓글 여부 확인
+//   const isDeleted = comment.deleted || !comment.content;
+
+//   // 사용자 정보가 없는 경우 기본값 제공
+//   const commentUser = comment.user || {
+//     username: "unknown",
+//     displayName: "알 수 없는 사용자",
+//     avatarUrl: "/default-avatar.png",
+//   };
+
+//   // 보여줄 수 있는 답글 개수 계산
+//   const visibleRepliesCount =
+//     comment.replies?.filter(
+//       (reply) => !reply.deleted || (reply.deleted && reply.replies?.length > 0),
+//     ).length || 0;
+
+//   // 삭제된 댓글이고 자식 댓글도 없으면 null 반환
+//   if (isDeleted && !visibleRepliesCount) {
+//     return null;
+//   }
+
+//   return (
+//     <div className="py-3" data-comment-id={comment.id}>
+//       <div style={{ paddingLeft: `${level * 20}px` }}>
+//         <div className="group/comment flex gap-3">
+//           <div className="flex-shrink-0">
+//             <UserTooltip user={commentUser}>
+//               <Link href={`/users/${commentUser.username}`}>
+//                 <UserAvatar avatarUrl={commentUser.avatarUrl} size={32} />
+//               </Link>
+//             </UserTooltip>
+//           </div>
+
+//           <div className="flex-1 space-y-1">
+//             <div className="flex items-center gap-2">
+//               <UserTooltip user={commentUser}>
+//                 <Link
+//                   href={`/users/${commentUser.username}`}
+//                   className="font-medium hover:underline"
+//                 >
+//                   {commentUser.displayName}
+//                 </Link>
+//               </UserTooltip>
+//               <span className="text-sm text-muted-foreground">
+//                 {formatRelativeDate(comment.createdAt)}
+//               </span>
+//             </div>
+
+//             <div
+//               className={`text-sm ${isDeleted ? "text-muted-foreground italic" : ""}`}
+//             >
+//               {isDeleted ? "댓글이 삭제되었습니다" : comment.content}
+//             </div>
+
+//             {/* 부모 댓글에만 답글달기 버튼 표시 */}
+//             {canReply && !isDeleted && (
+//               <button
+//                 onClick={() => setShowReplyInput(!showReplyInput)}
+//                 className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+//                 disabled={isLoading}
+//               >
+//                 <MessageSquare className="h-3 w-3" />
+//                 {isLoading ? "처리 중..." : "답글달기"}
+//               </button>
+//             )}
+//           </div>
+
+//           {user?.id === commentUser.id && !isDeleted && (
+//             <CommentMoreButton
+//               comment={comment}
+//               className="opacity-0 transition-opacity group-hover/comment:opacity-100"
+//             />
+//           )}
+//         </div>
+
+//         {/* 답글 입력 폼 (부모 댓글에만 표시) */}
+//         {showReplyInput && !isDeleted && isParentComment && (
+//           <div className="ml-8 mt-2">
+//             <CommentInput
+//               post={post}
+//               parentId={comment.id}
+//               onSuccess={handleReplySubmit}
+//               placeholder={`${commentUser.displayName}님에게 답글 쓰기...`}
+//             />
+//           </div>
+//         )}
+
+//         {/* 답글이 있는 경우에만 답글 더보기 버튼 표시 */}
+//         {visibleRepliesCount > 0 && (
+//           <div className="ml-8 mt-2">
+//             <button
+//               onClick={() => setShowReplies(!showReplies)}
+//               className="show-replies-button flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700"
+//             >
+//               <svg
+//                 className={`h-4 w-4 transform transition-transform ${
+//                   showReplies ? "rotate-180" : ""
+//                 }`}
+//                 fill="none"
+//                 stroke="currentColor"
+//                 viewBox="0 0 24 24"
+//               >
+//                 <path
+//                   strokeLinecap="round"
+//                   strokeLinejoin="round"
+//                   strokeWidth={2}
+//                   d={showReplies ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
+//                 />
+//               </svg>
+//               {showReplies
+//                 ? "답글 숨기기"
+//                 : `답글 ${visibleRepliesCount}개 보기`}
+//             </button>
+//           </div>
+//         )}
+
+//         {/* 답글 목록 */}
+//         {showReplies && comment.replies && (
+//           <div className="mt-2 space-y-3">
+//             {comment.replies
+//               .filter(
+//                 (reply) =>
+//                   !reply.deleted ||
+//                   (reply.deleted && reply.replies?.length > 0),
+//               )
+//               .map((reply) => (
+//                 <Comment
+//                   key={reply.id}
+//                   comment={reply as CommentWithoutPost}
+//                   post={post}
+//                   level={level + 1}
+//                 />
+//               ))}
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }
+
+// Comment.tsx
+import { useSession } from "@/app/(main)/SessionProvider";
+import { CommentData, PostData } from "@/lib/types";
+import { formatRelativeDate } from "@/lib/utils";
+import { MessageSquare } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import UserAvatar from "../UserAvatar";
+import UserTooltip from "../UserTooltip";
 import CommentInput from "./CommentInput";
-import kyInstance from "@/lib/ky";
+import CommentMoreButton from "./CommentMoreButton";
+
+type CommentWithoutPost = Omit<CommentData, "post">;
 
 interface CommentProps {
-  comment: CommentData;
+  comment: CommentWithoutPost;
   post: PostData;
   level: number;
 }
 
-export default function Comments({ post }: CommentProps) {
-  const { data, fetchNextPage, hasNextPage, isFetching, status } =
-    useInfiniteQuery({
-      queryKey: ["comments", post.id],
-      queryFn: async ({ pageParam }) => {
-        const response = await kyInstance
-          .get(
-            `/api/posts/${post.id}/comments`,
-            pageParam ? { searchParams: { cursor: pageParam } } : {},
-          )
-          .json<CommentsPage>();
+export default function Comment({ comment, post, level }: CommentProps) {
+  const { user } = useSession();
+  const [showReplyInput, setShowReplyInput] = useState(false);
+  const [showReplies, setShowReplies] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-        // 마지막 댓글의 ID를 커서로 사용
-        const newCursor =
-          response.comments.length > 0
-            ? response.comments[response.comments.length - 1].id
-            : null;
+  // 부모 댓글인지 확인 (parentId가 없는 경우가 부모 댓글)
+  const isParentComment = !comment.parent;
+  const canReply = !!user && isParentComment;
 
-        return {
-          ...response,
-          previousCursor: newCursor,
-        };
-      },
-      initialPageParam: null as string | null,
-      getNextPageParam: (lastPage) => lastPage.previousCursor,
-      // 최대 10페이지까지만 로드
-      maxPages: 10,
-    });
+  const handleReplySubmit = async () => {
+    setIsLoading(true);
+    try {
+      setShowReplyInput(false);
+      setShowReplies(true); // 답글 입력 후 자동으로 답글 목록 표시
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  // 최상위 댓글만 필터링 및 정렬
-  const comments = (data?.pages.flatMap((page) => page.comments) || [])
-    .filter((comment) => !comment.parentId)
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
+  // 삭제된 댓글 여부 확인
+  const isDeleted = comment.deleted || !comment.content;
+
+  // 사용자 정보가 없는 경우 기본값 제공
+  const commentUser = comment.user || {
+    username: "unknown",
+    displayName: "알 수 없는 사용자",
+    avatarUrl: "/default-avatar.png",
+  };
+
+  // 보여줄 수 있는 답글 개수 계산
+  const visibleRepliesCount =
+    comment.replies?.filter(
+      (reply) => !reply.deleted || (reply.deleted && reply.replies?.length > 0),
+    ).length || 0;
+
+  // 삭제된 댓글이고 자식 댓글도 없으면 null 반환
+  if (isDeleted && !visibleRepliesCount) {
+    return null;
+  }
 
   return (
-    <div className="space-y-4">
-      <CommentInput post={post} />
+    <div className="py-3" data-comment-id={comment.id}>
+      <div style={{ paddingLeft: `${level * 20}px` }}>
+        <div className="group/comment flex gap-3">
+          <div className="flex-shrink-0">
+            <UserTooltip user={commentUser}>
+              <Link href={`/users/${commentUser.username}`}>
+                <UserAvatar avatarUrl={commentUser.avatarUrl} size={32} />
+              </Link>
+            </UserTooltip>
+          </div>
 
-      <div>
-        {comments.map((comment) => (
-          <Comment key={comment.id} comment={comment} post={post} level={0} />
-        ))}
+          <div className="flex-1 space-y-1">
+            <div className="flex items-center gap-2">
+              <UserTooltip user={commentUser}>
+                <Link
+                  href={`/users/${commentUser.username}`}
+                  className="text-sm hover:underline"
+                >
+                  {commentUser.displayName}
+                </Link>
+              </UserTooltip>
+              <span className="text-sm text-muted-foreground">
+                {formatRelativeDate(comment.createdAt)}
+              </span>
+            </div>
+
+            <div
+              className={`text-sm ${isDeleted ? "text-muted-foreground italic" : ""}`}
+            >
+              {isDeleted ? "댓글이 삭제되었습니다" : comment.content}
+            </div>
+
+            {/* 부모 댓글이면서 삭제되지 않았거나, 삭제되었지만 자식 댓글이 있는 경우 답글달기 버튼 표시 */}
+            {canReply && (isDeleted ? visibleRepliesCount > 0 : true) && (
+              <button
+                onClick={() => setShowReplyInput(!showReplyInput)}
+                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                disabled={isLoading}
+              >
+                <MessageSquare className="h-3 w-3" />
+                {isLoading ? "처리 중..." : "답글달기"}
+              </button>
+            )}
+          </div>
+
+          {user?.id === commentUser.id && !isDeleted && (
+            <CommentMoreButton
+              comment={comment}
+              className="opacity-0 transition-opacity group-hover/comment:opacity-100"
+            />
+          )}
+        </div>
+
+        {/* 답글 입력 폼 (부모 댓글에만 표시) */}
+        {showReplyInput && isParentComment && (
+          <div className="ml-8 mt-2">
+            <CommentInput
+              post={post}
+              parentId={comment.id}
+              onSuccess={handleReplySubmit}
+              placeholder={`${commentUser.displayName}님에게 답글 쓰기...`}
+            />
+          </div>
+        )}
+
+        {/* 답글이 있는 경우에만 답글 더보기 버튼 표시 */}
+        {visibleRepliesCount > 0 && (
+          <div className="ml-8 mt-2">
+            <button
+              onClick={() => setShowReplies(!showReplies)}
+              className="show-replies-button flex items-center gap-2 text-sm"
+            >
+              <svg
+                className={`h-4 w-4 transform transition-transform ${
+                  showReplies ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d={showReplies ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
+                />
+              </svg>
+              {showReplies
+                ? "답글 숨기기"
+                : `답글 ${visibleRepliesCount}개 보기`}
+            </button>
+          </div>
+        )}
+
+        {/* 답글 목록 */}
+        {showReplies && comment.replies && (
+          <div className="mt-2 space-y-3">
+            {comment.replies
+              .filter(
+                (reply) =>
+                  !reply.deleted ||
+                  (reply.deleted && reply.replies?.length > 0),
+              )
+              .map((reply) => (
+                <Comment
+                  key={reply.id}
+                  comment={reply as CommentWithoutPost}
+                  post={post}
+                  level={level + 1}
+                />
+              ))}
+          </div>
+        )}
       </div>
-
-      {hasNextPage && (
-        <button
-          onClick={() => fetchNextPage()}
-          disabled={isFetching}
-          className="w-full text-sm text-muted-foreground hover:text-foreground"
-        >
-          {isFetching ? "로딩 중..." : "이전 댓글 더보기"}
-        </button>
-      )}
-
-      {status === "pending" && (
-        <div className="flex justify-center">
-          <Loader2 className="h-6 w-6 animate-spin" />
-        </div>
-      )}
-
-      {status === "error" && (
-        <div className="text-center text-destructive">
-          댓글을 불러오지 못했습니다.
-        </div>
-      )}
-
-      {status === "success" && !comments.length && (
-        <div className="text-center text-muted-foreground">
-          첫 번째 댓글을 남겨보세요.
-        </div>
-      )}
     </div>
   );
 }

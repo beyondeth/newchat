@@ -315,13 +315,33 @@ export async function submitComment({
 
   const { content: contentValidated } = createCommentSchema.parse({ content });
 
-  // 부모 댓글이 있는 경우 존재 여부 확인
+  // 부모 댓글이 있는 경우 존재 여부와 부모 댓글의 parentId 확인
   if (parentId) {
-    const parentComment = await prisma.comment.findUnique({
-      where: { id: parentId },
+    const parentComment = await prisma.comment.findFirst({
+      where: {
+        id: parentId,
+        // deleted: false 조건을 제거하여 삭제된 댓글도 찾을 수 있도록 함
+      },
+      select: {
+        id: true,
+        parentId: true,
+        postId: true,
+        deleted: true,
+      },
     });
+
     if (!parentComment) {
       throw new Error("Parent comment not found");
+    }
+
+    // 부모 댓글이 이미 답글인 경우 (즉, parentId가 있는 경우) 답글 작성 불가
+    if (parentComment.parentId) {
+      throw new Error("Cannot reply to a reply");
+    }
+
+    // 다른 게시물의 댓글에 답글을 다는 것을 방지
+    if (parentComment.postId !== post.id) {
+      throw new Error("Cannot reply to a comment from different post");
     }
   }
 

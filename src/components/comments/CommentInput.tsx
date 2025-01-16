@@ -64,6 +64,7 @@ import { useSubmitCommentMutation } from "./mutations";
 interface CommentInputProps {
   post: PostData;
   parentId?: string;
+  onClose?: () => void;
   onSuccess?: () => void;
   onCancel?: () => void;
   placeholder?: string;
@@ -74,6 +75,7 @@ export default function CommentInput({
   parentId,
   onSuccess,
   onCancel,
+  onClose,
   placeholder = "댓글을 입력하세요...",
 }: CommentInputProps) {
   const [content, setContent] = useState("");
@@ -92,7 +94,8 @@ export default function CommentInput({
       {
         onSuccess: () => {
           setContent("");
-          onSuccess?.();
+          onSuccess?.(); // 성공 핸들러 호출
+          onClose?.(); // onClose 핸들러도 호출
         },
       },
     );
