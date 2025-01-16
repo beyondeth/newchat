@@ -609,7 +609,507 @@
 // }
 
 // mutations.ts
-import { CommentsPage, PostsPage, CommentData, UserData } from "@/lib/types";
+// import { CommentsPage, PostsPage, CommentData, UserData } from "@/lib/types";
+// import {
+//   InfiniteData,
+//   QueryKey,
+//   useMutation,
+//   useQueryClient,
+// } from "@tanstack/react-query";
+// import { useToast } from "../ui/use-toast";
+// import { deleteComment, submitComment, editComment } from "./actions";
+
+// interface Session {
+//   user: UserData;
+// }
+
+// type CommentsInfiniteData = InfiniteData<CommentsPage>;
+
+// export function useSubmitCommentMutation(postId: string) {
+//   const { toast } = useToast();
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     mutationFn: submitComment,
+//     onMutate: async (newCommentData) => {
+//       const queryKey: QueryKey = ["comments", postId];
+//       await queryClient.cancelQueries({ queryKey });
+
+//       const session = queryClient.getQueryData<Session>(["session"]);
+//       if (!session?.user) return;
+
+//       const tempUser: UserData = {
+//         id: session.user.id,
+//         username: session.user.username,
+//         displayName: session.user.displayName,
+//         googleId: session.user.googleId,
+//         kakaoId: session.user.kakaoId,
+//         avatarUrl: session.user.avatarUrl,
+//         bio: session.user.bio,
+//         createdAt: session.user.createdAt,
+//         followers: [],
+//         postViews: [],
+//         _count: {
+//           posts: 0,
+//           followers: 0,
+//           postViews: 0,
+//         },
+//       };
+
+//       // tempComment에 필요한 모든 필드 추가
+//       const tempComment: Partial<CommentData> = {
+//         id: Date.now().toString(),
+//         content: newCommentData.content,
+//         createdAt: new Date(),
+//         parentId: newCommentData.parentId,
+//         user: tempUser,
+//         replies: [],
+//         deleted: false,
+//         parent: null,
+//         post: newCommentData.post,
+//       };
+
+//       // 이전 데이터 백업
+//       const previousData =
+//         queryClient.getQueryData<CommentsInfiniteData>(queryKey);
+
+//       // 낙관적 업데이트
+//       queryClient.setQueryData<CommentsInfiniteData>(queryKey, (old) => {
+//         if (!old) return old;
+
+//         const updatedPages = old.pages.map((page) => ({
+//           ...page,
+//           comments: tempComment.parentId
+//             ? page.comments.map((comment) =>
+//                 comment.id === tempComment.parentId
+//                   ? {
+//                       ...comment,
+//                       replies: [
+//                         ...(comment.replies || []),
+//                         tempComment as CommentData,
+//                       ],
+//                     }
+//                   : comment,
+//               )
+//             : [tempComment as CommentData, ...page.comments],
+//         }));
+
+//         return {
+//           ...old,
+//           pages: updatedPages,
+//         };
+//       });
+
+//       return { previousData };
+//     },
+//     onSuccess: async (newComment) => {
+//       const queryKey: QueryKey = ["comments", postId];
+//       const postQueryKey: QueryKey = ["post-feed"];
+
+//       queryClient.setQueriesData<InfiniteData<PostsPage>>(
+//         { queryKey: postQueryKey },
+//         (oldData) => {
+//           if (!oldData) return oldData;
+//           return {
+//             ...oldData,
+//             pages: oldData.pages.map((page) => ({
+//               ...page,
+//               posts: page.posts.map((p) =>
+//                 p.id === postId
+//                   ? {
+//                       ...p,
+//                       _count: { ...p._count, comments: p._count.comments + 1 },
+//                     }
+//                   : p,
+//               ),
+//             })),
+//           };
+//         },
+//       );
+
+//       toast({ description: "댓글이 작성되었습니다." });
+//     },
+//     onError(error, variables, context) {
+//       if (context?.previousData) {
+//         const queryKey: QueryKey = ["comments", postId];
+//         queryClient.setQueryData(queryKey, context.previousData);
+//       }
+//       console.error(error);
+//       toast({
+//         variant: "destructive",
+//         description: "댓글 작성에 실패했습니다. 다시 시도해주세요.",
+//       });
+//     },
+//   });
+// }
+
+// export function useDeleteCommentMutation() {
+//   const { toast } = useToast();
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     mutationFn: deleteComment,
+//     onSuccess: async (deletedComment) => {
+//       const queryKey: QueryKey = ["comments", deletedComment.postId];
+//       const postQueryKey: QueryKey = ["post-feed"];
+
+//       await queryClient.cancelQueries({ queryKey });
+
+//       queryClient.setQueryData<CommentsInfiniteData>(queryKey, (oldData) => {
+//         if (!oldData) return oldData;
+
+//         return {
+//           pageParams: oldData.pageParams,
+//           pages: oldData.pages.map((page) => ({
+//             ...page,
+//             comments: page.comments.map((comment) => {
+//               if (
+//                 deletedComment.parentId &&
+//                 comment.id === deletedComment.parentId
+//               ) {
+//                 return {
+//                   ...comment,
+//                   replies:
+//                     comment.replies?.map((reply) =>
+//                       reply.id === deletedComment.id
+//                         ? { ...reply, content: null, deleted: true }
+//                         : reply,
+//                     ) || [],
+//                 };
+//               }
+//               return comment.id === deletedComment.id
+//                 ? { ...comment, content: null, deleted: true }
+//                 : comment;
+//             }),
+//           })),
+//         };
+//       });
+
+//       queryClient.setQueriesData<InfiniteData<PostsPage>>(
+//         { queryKey: postQueryKey },
+//         (oldData) => {
+//           if (!oldData) return oldData;
+//           return {
+//             pageParams: oldData.pageParams,
+//             pages: oldData.pages.map((page) => ({
+//               ...page,
+//               posts: page.posts.map((p) =>
+//                 p.id === deletedComment.postId
+//                   ? {
+//                       ...p,
+//                       _count: { ...p._count, comments: p._count.comments - 1 },
+//                     }
+//                   : p,
+//               ),
+//             })),
+//           };
+//         },
+//       );
+
+//       toast({ description: "댓글이 삭제되었습니다." });
+//     },
+//     onError(error) {
+//       console.error(error);
+//       toast({
+//         variant: "destructive",
+//         description: "댓글 삭제에 실패했습니다. 다시 시도해주세요.",
+//       });
+//     },
+//   });
+// }
+
+// export function useEditCommentMutation() {
+//   const { toast } = useToast();
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     mutationFn: editComment,
+//     onSuccess: async (editedComment) => {
+//       const queryKey: QueryKey = ["comments", editedComment.postId];
+//       await queryClient.cancelQueries({ queryKey });
+
+//       queryClient.setQueryData<CommentsInfiniteData>(queryKey, (oldData) => {
+//         if (!oldData) return oldData;
+
+//         return {
+//           pageParams: oldData.pageParams,
+//           pages: oldData.pages.map((page) => ({
+//             ...page,
+//             comments: page.comments.map((comment) => {
+//               if (
+//                 editedComment.parentId &&
+//                 comment.id === editedComment.parentId
+//               ) {
+//                 return {
+//                   ...comment,
+//                   replies:
+//                     comment.replies?.map((reply) =>
+//                       reply.id === editedComment.id ? editedComment : reply,
+//                     ) || [],
+//                 };
+//               }
+//               return comment.id === editedComment.id ? editedComment : comment;
+//             }),
+//           })),
+//         };
+//       });
+
+//       toast({ description: "댓글이 수정되었습니다." });
+//     },
+//     onError(error) {
+//       console.error(error);
+//       toast({
+//         variant: "destructive",
+//         description: "댓글 수정에 실패했습니다. 다시 시도해주세요.",
+//       });
+//     },
+//   });
+// }
+
+//###
+// import { CommentsPage, PostsPage, CommentData, UserData } from "@/lib/types";
+// import {
+//   InfiniteData,
+//   QueryKey,
+//   useMutation,
+//   useQueryClient,
+// } from "@tanstack/react-query";
+// import { useToast } from "../ui/use-toast";
+// import { deleteComment, submitComment, editComment } from "./actions";
+
+// interface Session {
+//   user: UserData;
+// }
+
+// type CommentsInfiniteData = InfiniteData<CommentsPage>;
+
+// export function useSubmitCommentMutation(postId: string) {
+//   const { toast } = useToast();
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     mutationFn: submitComment,
+//     onMutate: async (newCommentData) => {
+//       const queryKey: QueryKey = ["comments", postId];
+//       await queryClient.cancelQueries({ queryKey });
+
+//       const session = queryClient.getQueryData<Session>(["session"]);
+//       if (!session?.user) return;
+
+//       // 간단한 임시 댓글 생성
+//       const tempComment: Partial<CommentData> = {
+//         id: Date.now().toString(),
+//         content: newCommentData.content,
+//         createdAt: new Date(),
+//         parentId: newCommentData.parentId,
+//         user: session.user, // 세션의 사용자 정보를 직접 사용
+//         replies: [],
+//         deleted: false,
+//         parent: null,
+//         post: newCommentData.post,
+//       };
+
+//       // 이전 데이터 백업
+//       const previousData =
+//         queryClient.getQueryData<CommentsInfiniteData>(queryKey);
+
+//       // 첫 번째 코드의 방식을 활용한 효율적인 업데이트
+//       queryClient.setQueryData<CommentsInfiniteData>(queryKey, (old) => {
+//         if (!old?.pages[0]) return old;
+
+//         return {
+//           pageParams: old.pageParams,
+//           pages: [
+//             {
+//               ...old.pages[0],
+//               comments: tempComment.parentId
+//                 ? old.pages[0].comments.map((comment) =>
+//                     comment.id === tempComment.parentId
+//                       ? {
+//                           ...comment,
+//                           replies: [
+//                             ...(comment.replies || []),
+//                             tempComment as CommentData,
+//                           ],
+//                         }
+//                       : comment,
+//                   )
+//                 : [tempComment as CommentData, ...old.pages[0].comments],
+//             },
+//             ...old.pages.slice(1),
+//           ],
+//         };
+//       });
+
+//       return { previousData };
+//     },
+//     onSuccess: async (newComment) => {
+//       const queryKey: QueryKey = ["comments", postId];
+
+//       // 성공 시 댓글 수 업데이트만 수행
+//       if (!newComment.parentId) {
+//         queryClient.setQueriesData<InfiniteData<PostsPage>>(
+//           { queryKey: ["post-feed"] },
+//           (oldData) => {
+//             if (!oldData) return oldData;
+//             return {
+//               ...oldData,
+//               pages: oldData.pages.map((page) => ({
+//                 ...page,
+//                 posts: page.posts.map((p) =>
+//                   p.id === postId
+//                     ? {
+//                         ...p,
+//                         _count: {
+//                           ...p._count,
+//                           comments: p._count.comments + 1,
+//                         },
+//                       }
+//                     : p,
+//                 ),
+//               })),
+//             };
+//           },
+//         );
+//       }
+
+//       toast({ description: "댓글이 작성되었습니다." });
+//     },
+//     onError(error, variables, context) {
+//       if (context?.previousData) {
+//         queryClient.setQueryData(["comments", postId], context.previousData);
+//       }
+//       toast({
+//         variant: "destructive",
+//         description: "댓글 작성에 실패했습니다. 다시 시도해주세요.",
+//       });
+//     },
+//   });
+// }
+
+// export function useDeleteCommentMutation() {
+//   const { toast } = useToast();
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     mutationFn: deleteComment,
+//     onSuccess: async (deletedComment) => {
+//       const queryKey: QueryKey = ["comments", deletedComment.postId];
+//       const postQueryKey: QueryKey = ["post-feed"];
+
+//       await queryClient.cancelQueries({ queryKey });
+
+//       queryClient.setQueryData<CommentsInfiniteData>(queryKey, (oldData) => {
+//         if (!oldData) return oldData;
+
+//         return {
+//           pageParams: oldData.pageParams,
+//           pages: oldData.pages.map((page) => ({
+//             ...page,
+//             comments: page.comments.map((comment) => {
+//               if (
+//                 deletedComment.parentId &&
+//                 comment.id === deletedComment.parentId
+//               ) {
+//                 return {
+//                   ...comment,
+//                   replies:
+//                     comment.replies?.map((reply) =>
+//                       reply.id === deletedComment.id
+//                         ? { ...reply, content: null, deleted: true }
+//                         : reply,
+//                     ) || [],
+//                 };
+//               }
+//               return comment.id === deletedComment.id
+//                 ? { ...comment, content: null, deleted: true }
+//                 : comment;
+//             }),
+//           })),
+//         };
+//       });
+
+//       queryClient.setQueriesData<InfiniteData<PostsPage>>(
+//         { queryKey: postQueryKey },
+//         (oldData) => {
+//           if (!oldData) return oldData;
+//           return {
+//             pageParams: oldData.pageParams,
+//             pages: oldData.pages.map((page) => ({
+//               ...page,
+//               posts: page.posts.map((p) =>
+//                 p.id === deletedComment.postId
+//                   ? {
+//                       ...p,
+//                       _count: { ...p._count, comments: p._count.comments - 1 },
+//                     }
+//                   : p,
+//               ),
+//             })),
+//           };
+//         },
+//       );
+
+//       toast({ description: "댓글이 삭제되었습니다." });
+//     },
+//     onError(error) {
+//       console.error(error);
+//       toast({
+//         variant: "destructive",
+//         description: "댓글 삭제에 실패했습니다. 다시 시도해주세요.",
+//       });
+//     },
+//   });
+// }
+
+// export function useEditCommentMutation() {
+//   const { toast } = useToast();
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     mutationFn: editComment,
+//     onSuccess: async (editedComment) => {
+//       const queryKey: QueryKey = ["comments", editedComment.postId];
+//       await queryClient.cancelQueries({ queryKey });
+
+//       queryClient.setQueryData<CommentsInfiniteData>(queryKey, (oldData) => {
+//         if (!oldData) return oldData;
+
+//         return {
+//           pageParams: oldData.pageParams,
+//           pages: oldData.pages.map((page) => ({
+//             ...page,
+//             comments: page.comments.map((comment) => {
+//               if (
+//                 editedComment.parentId &&
+//                 comment.id === editedComment.parentId
+//               ) {
+//                 return {
+//                   ...comment,
+//                   replies:
+//                     comment.replies?.map((reply) =>
+//                       reply.id === editedComment.id ? editedComment : reply,
+//                     ) || [],
+//                 };
+//               }
+//               return comment.id === editedComment.id ? editedComment : comment;
+//             }),
+//           })),
+//         };
+//       });
+
+//       toast({ description: "댓글이 수정되었습니다." });
+//     },
+//     onError(error) {
+//       console.error(error);
+//       toast({
+//         variant: "destructive",
+//         description: "댓글 수정에 실패했습니다. 다시 시도해주세요.",
+//       });
+//     },
+//   });
+// }
+
 import {
   InfiniteData,
   QueryKey,
@@ -618,12 +1118,7 @@ import {
 } from "@tanstack/react-query";
 import { useToast } from "../ui/use-toast";
 import { deleteComment, submitComment, editComment } from "./actions";
-
-interface Session {
-  user: UserData;
-}
-
-type CommentsInfiniteData = InfiniteData<CommentsPage>;
+import { CommentsPage, PostsPage, UserData, CommentData } from "@/lib/types";
 
 export function useSubmitCommentMutation(postId: string) {
   const { toast } = useToast();
@@ -635,68 +1130,47 @@ export function useSubmitCommentMutation(postId: string) {
       const queryKey: QueryKey = ["comments", postId];
       await queryClient.cancelQueries({ queryKey });
 
-      const session = queryClient.getQueryData<Session>(["session"]);
+      const session = queryClient.getQueryData<{ user: UserData }>(["session"]);
       if (!session?.user) return;
 
-      const tempUser: UserData = {
-        id: session.user.id,
-        username: session.user.username,
-        displayName: session.user.displayName,
-        googleId: session.user.googleId,
-        kakaoId: session.user.kakaoId,
-        avatarUrl: session.user.avatarUrl,
-        bio: session.user.bio,
-        createdAt: session.user.createdAt,
-        followers: [],
-        postViews: [],
-        _count: {
-          posts: 0,
-          followers: 0,
-          postViews: 0,
-        },
-      };
-
-      // tempComment에 필요한 모든 필드 추가
       const tempComment: Partial<CommentData> = {
         id: Date.now().toString(),
         content: newCommentData.content,
         createdAt: new Date(),
         parentId: newCommentData.parentId,
-        user: tempUser,
+        user: session.user,
         replies: [],
         deleted: false,
-        parent: null,
         post: newCommentData.post,
       };
 
-      // 이전 데이터 백업
       const previousData =
-        queryClient.getQueryData<CommentsInfiniteData>(queryKey);
+        queryClient.getQueryData<InfiniteData<CommentsPage>>(queryKey);
 
-      // 낙관적 업데이트
-      queryClient.setQueryData<CommentsInfiniteData>(queryKey, (old) => {
-        if (!old) return old;
-
-        const updatedPages = old.pages.map((page) => ({
-          ...page,
-          comments: tempComment.parentId
-            ? page.comments.map((comment) =>
-                comment.id === tempComment.parentId
-                  ? {
-                      ...comment,
-                      replies: [
-                        ...(comment.replies || []),
-                        tempComment as CommentData,
-                      ],
-                    }
-                  : comment,
-              )
-            : [tempComment as CommentData, ...page.comments],
-        }));
+      queryClient.setQueryData<InfiniteData<CommentsPage>>(queryKey, (old) => {
+        if (!old?.pages[0]) return old;
 
         return {
-          ...old,
-          pages: updatedPages,
+          pageParams: old.pageParams,
+          pages: [
+            {
+              ...old.pages[0],
+              comments: tempComment.parentId
+                ? old.pages[0].comments.map((comment) =>
+                    comment.id === tempComment.parentId
+                      ? {
+                          ...comment,
+                          replies: [
+                            ...(comment.replies || []),
+                            tempComment as CommentData,
+                          ],
+                        }
+                      : comment,
+                  )
+                : [tempComment as CommentData, ...old.pages[0].comments],
+            },
+            ...old.pages.slice(1),
+          ],
         };
       });
 
@@ -706,38 +1180,123 @@ export function useSubmitCommentMutation(postId: string) {
       const queryKey: QueryKey = ["comments", postId];
       const postQueryKey: QueryKey = ["post-feed"];
 
-      queryClient.setQueriesData<InfiniteData<PostsPage>>(
-        { queryKey: postQueryKey },
+      queryClient.setQueryData<InfiniteData<CommentsPage>>(
+        queryKey,
         (oldData) => {
           if (!oldData) return oldData;
+
           return {
-            ...oldData,
+            pageParams: oldData.pageParams,
+            pages: [
+              {
+                ...oldData.pages[0],
+                comments: oldData.pages[0].comments.map((comment) => {
+                  if (
+                    newComment.parentId &&
+                    comment.id === newComment.parentId
+                  ) {
+                    return {
+                      ...comment,
+                      replies: [...(comment.replies || []), newComment],
+                    };
+                  }
+                  return comment.id === newComment.id ? newComment : comment;
+                }),
+              },
+              ...oldData.pages.slice(1),
+            ],
+          };
+        },
+      );
+
+      if (!newComment.parentId) {
+        queryClient.setQueriesData<InfiniteData<PostsPage>>(
+          { queryKey: postQueryKey },
+          (oldData) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                posts: page.posts.map((p) =>
+                  p.id === postId
+                    ? {
+                        ...p,
+                        _count: {
+                          ...p._count,
+                          comments: p._count.comments + 1,
+                        },
+                      }
+                    : p,
+                ),
+              })),
+            };
+          },
+        );
+      }
+
+      toast({ description: "댓글이 작성되었습니다." });
+    },
+    onError: (error, variables, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(["comments", postId], context.previousData);
+      }
+      toast({
+        variant: "destructive",
+        description: "댓글 작성에 실패했습니다. 다시 시도해주세요.",
+      });
+    },
+  });
+}
+
+export function useEditCommentMutation() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: editComment,
+    onSuccess: async (editedComment) => {
+      const queryKey: QueryKey = ["comments", editedComment.postId];
+      await queryClient.cancelQueries({ queryKey });
+
+      queryClient.setQueryData<InfiniteData<CommentsPage>>(
+        queryKey,
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            pageParams: oldData.pageParams,
             pages: oldData.pages.map((page) => ({
               ...page,
-              posts: page.posts.map((p) =>
-                p.id === postId
-                  ? {
-                      ...p,
-                      _count: { ...p._count, comments: p._count.comments + 1 },
-                    }
-                  : p,
-              ),
+              comments: page.comments.map((comment) => {
+                if (
+                  editedComment.parentId &&
+                  comment.id === editedComment.parentId
+                ) {
+                  return {
+                    ...comment,
+                    replies:
+                      comment.replies?.map((reply) =>
+                        reply.id === editedComment.id ? editedComment : reply,
+                      ) || [],
+                  };
+                }
+                return comment.id === editedComment.id
+                  ? editedComment
+                  : comment;
+              }),
             })),
           };
         },
       );
 
-      toast({ description: "댓글이 작성되었습니다." });
+      toast({ description: "댓글이 수정되었습니다." });
     },
-    onError(error, variables, context) {
-      if (context?.previousData) {
-        const queryKey: QueryKey = ["comments", postId];
-        queryClient.setQueryData(queryKey, context.previousData);
-      }
+    onError: (error) => {
       console.error(error);
       toast({
         variant: "destructive",
-        description: "댓글 작성에 실패했습니다. 다시 시도해주세요.",
+        description: "댓글 수정에 실패했습니다. 다시 시도해주세요.",
       });
     },
   });
@@ -755,42 +1314,45 @@ export function useDeleteCommentMutation() {
 
       await queryClient.cancelQueries({ queryKey });
 
-      queryClient.setQueryData<CommentsInfiniteData>(queryKey, (oldData) => {
-        if (!oldData) return oldData;
+      queryClient.setQueryData<InfiniteData<CommentsPage>>(
+        queryKey,
+        (oldData) => {
+          if (!oldData) return oldData;
 
-        return {
-          pageParams: oldData.pageParams,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            comments: page.comments.map((comment) => {
-              if (
-                deletedComment.parentId &&
-                comment.id === deletedComment.parentId
-              ) {
-                return {
-                  ...comment,
-                  replies:
-                    comment.replies?.map((reply) =>
-                      reply.id === deletedComment.id
-                        ? { ...reply, content: null, deleted: true }
-                        : reply,
-                    ) || [],
-                };
-              }
-              return comment.id === deletedComment.id
-                ? { ...comment, content: null, deleted: true }
-                : comment;
-            }),
-          })),
-        };
-      });
+          return {
+            pageParams: oldData.pageParams,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              comments: page.comments.map((comment) => {
+                if (
+                  deletedComment.parentId &&
+                  comment.id === deletedComment.parentId
+                ) {
+                  return {
+                    ...comment,
+                    replies:
+                      comment.replies?.map((reply) =>
+                        reply.id === deletedComment.id
+                          ? { ...reply, content: null, deleted: true }
+                          : reply,
+                      ) || [],
+                  };
+                }
+                return comment.id === deletedComment.id
+                  ? { ...comment, content: null, deleted: true }
+                  : comment;
+              }),
+            })),
+          };
+        },
+      );
 
       queryClient.setQueriesData<InfiniteData<PostsPage>>(
         { queryKey: postQueryKey },
         (oldData) => {
           if (!oldData) return oldData;
           return {
-            pageParams: oldData.pageParams,
+            ...oldData,
             pages: oldData.pages.map((page) => ({
               ...page,
               posts: page.posts.map((p) =>
@@ -808,59 +1370,11 @@ export function useDeleteCommentMutation() {
 
       toast({ description: "댓글이 삭제되었습니다." });
     },
-    onError(error) {
+    onError: (error) => {
       console.error(error);
       toast({
         variant: "destructive",
         description: "댓글 삭제에 실패했습니다. 다시 시도해주세요.",
-      });
-    },
-  });
-}
-
-export function useEditCommentMutation() {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: editComment,
-    onSuccess: async (editedComment) => {
-      const queryKey: QueryKey = ["comments", editedComment.postId];
-      await queryClient.cancelQueries({ queryKey });
-
-      queryClient.setQueryData<CommentsInfiniteData>(queryKey, (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          pageParams: oldData.pageParams,
-          pages: oldData.pages.map((page) => ({
-            ...page,
-            comments: page.comments.map((comment) => {
-              if (
-                editedComment.parentId &&
-                comment.id === editedComment.parentId
-              ) {
-                return {
-                  ...comment,
-                  replies:
-                    comment.replies?.map((reply) =>
-                      reply.id === editedComment.id ? editedComment : reply,
-                    ) || [],
-                };
-              }
-              return comment.id === editedComment.id ? editedComment : comment;
-            }),
-          })),
-        };
-      });
-
-      toast({ description: "댓글이 수정되었습니다." });
-    },
-    onError(error) {
-      console.error(error);
-      toast({
-        variant: "destructive",
-        description: "댓글 수정에 실패했습니다. 다시 시도해주세요.",
       });
     },
   });

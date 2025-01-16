@@ -356,10 +356,173 @@
 //   );
 // }
 
+// import { CommentsPage, PostData } from "@/lib/types";
+// import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+// import { Loader2 } from "lucide-react";
+// import { useEffect } from "react";
+// import Comment from "./Comment";
+// import CommentInput from "./CommentInput";
+// import kyInstance from "@/lib/ky";
+
+// interface CommentsProps {
+//   post: PostData;
+// }
+
+// export default function Comments({ post }: CommentsProps) {
+//   const queryClient = useQueryClient();
+
+//   // 컴포넌트 마운트 시 즉시 데이터 프리페치
+//   useEffect(() => {
+//     queryClient.prefetchInfiniteQuery({
+//       queryKey: ["comments", post.id],
+//       queryFn: ({ pageParam }) =>
+//         kyInstance
+//           .get(
+//             `/api/posts/${post.id}/comments`,
+//             pageParam ? { searchParams: { cursor: pageParam } } : {},
+//           )
+//           .json<CommentsPage>(),
+//       initialPageParam: null as string | null,
+//     });
+//   }, [post.id, queryClient]);
+
+//   const { data, fetchNextPage, hasNextPage, isFetching, status } =
+//     useInfiniteQuery({
+//       queryKey: ["comments", post.id],
+//       queryFn: ({ pageParam }) =>
+//         kyInstance
+//           .get(
+//             `/api/posts/${post.id}/comments`,
+//             pageParam ? { searchParams: { cursor: pageParam } } : {},
+//           )
+//           .json<CommentsPage>(),
+//       initialPageParam: null as string | null,
+//       getNextPageParam: (lastPage) => lastPage.previousCursor,
+//     });
+
+//   const comments = data?.pages.flatMap((page) => page.comments) || [];
+
+//   return (
+//     <div className="space-y-4">
+//       <CommentInput post={post} />
+
+//       <div className="divide-y">
+//         {comments
+//           .filter((comment) => !comment.parentId)
+//           .map((comment) => (
+//             <Comment key={comment.id} comment={comment} post={post} level={0} />
+//           ))}
+//       </div>
+
+//       {hasNextPage && (
+//         <button
+//           onClick={() => fetchNextPage()}
+//           disabled={isFetching}
+//           className="w-full text-sm text-muted-foreground hover:text-foreground"
+//         >
+//           {isFetching ? "로딩 중..." : "이전 댓글 더보기"}
+//         </button>
+//       )}
+
+//       {status === "pending" && (
+//         <div className="flex justify-center">
+//           <Loader2 className="h-6 w-6 animate-spin" />
+//         </div>
+//       )}
+
+//       {status === "error" && (
+//         <div className="text-center text-destructive">
+//           댓글을 불러오지 못했습니다.
+//         </div>
+//       )}
+
+//       {status === "success" && !comments.length && (
+//         <div className="text-center text-muted-foreground">
+//           첫 번째 댓글을 남겨보세요.
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+// ###
+
+// import { CommentsPage, PostData } from "@/lib/types";
+// import { useInfiniteQuery } from "@tanstack/react-query";
+// import { Loader2 } from "lucide-react";
+// import Comment from "./Comment";
+// import CommentInput from "./CommentInput";
+// import kyInstance from "@/lib/ky";
+
+// interface CommentsProps {
+//   post: PostData;
+// }
+
+// export default function Comments({ post }: CommentsProps) {
+//   const { data, fetchNextPage, hasNextPage, isFetching, status } =
+//     useInfiniteQuery({
+//       queryKey: ["comments", post.id],
+//       queryFn: ({ pageParam }) =>
+//         kyInstance
+//           .get(
+//             `/api/posts/${post.id}/comments`,
+//             pageParam ? { searchParams: { cursor: pageParam } } : {},
+//           )
+//           .json<CommentsPage>(),
+//       initialPageParam: null as string | null,
+//       getNextPageParam: (lastPage) => lastPage.previousCursor,
+//       staleTime: 5000, // 5초 동안 데이터 신선도 유지
+//       enabled: !!post.id, // post.id 존재 시에만 쿼리 실행
+//     });
+
+//   const comments = data?.pages.flatMap((page) => page.comments) || [];
+
+//   return (
+//     <div className="space-y-4">
+//       <CommentInput post={post} />
+
+//       <div className="">
+//         {comments
+//           .filter((comment) => !comment.parentId)
+//           .map((comment) => (
+//             <Comment key={comment.id} comment={comment} post={post} level={0} />
+//           ))}
+//       </div>
+
+//       {hasNextPage && (
+//         <button
+//           onClick={() => fetchNextPage()}
+//           disabled={isFetching}
+//           className="w-full text-sm text-muted-foreground hover:text-foreground"
+//         >
+//           {isFetching ? "로딩 중..." : "이전 댓글 더보기"}
+//         </button>
+//       )}
+
+//       {status === "pending" && (
+//         <div className="flex justify-center">
+//           <Loader2 className="h-6 w-6 animate-spin" />
+//         </div>
+//       )}
+
+//       {status === "error" && (
+//         <div className="text-center text-destructive">
+//           댓글을 불러오지 못했습니다.
+//         </div>
+//       )}
+
+//       {status === "success" && !comments.length && (
+//         <div className="text-center text-muted-foreground">
+//           첫 번째 댓글을 남겨보세요.
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
 import { CommentsPage, PostData } from "@/lib/types";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
 import Comment from "./Comment";
 import CommentInput from "./CommentInput";
 import kyInstance from "@/lib/ky";
@@ -369,23 +532,6 @@ interface CommentsProps {
 }
 
 export default function Comments({ post }: CommentsProps) {
-  const queryClient = useQueryClient();
-
-  // 컴포넌트 마운트 시 즉시 데이터 프리페치
-  useEffect(() => {
-    queryClient.prefetchInfiniteQuery({
-      queryKey: ["comments", post.id],
-      queryFn: ({ pageParam }) =>
-        kyInstance
-          .get(
-            `/api/posts/${post.id}/comments`,
-            pageParam ? { searchParams: { cursor: pageParam } } : {},
-          )
-          .json<CommentsPage>(),
-      initialPageParam: null as string | null,
-    });
-  }, [post.id, queryClient]);
-
   const { data, fetchNextPage, hasNextPage, isFetching, status } =
     useInfiniteQuery({
       queryKey: ["comments", post.id],
@@ -398,6 +544,12 @@ export default function Comments({ post }: CommentsProps) {
           .json<CommentsPage>(),
       initialPageParam: null as string | null,
       getNextPageParam: (lastPage) => lastPage.previousCursor,
+      refetchOnWindowFocus: false,
+      staleTime: 5000,
+      select: (data) => ({
+        pages: [...data.pages].reverse(),
+        pageParams: [...data.pageParams].reverse(),
+      }),
     });
 
   const comments = data?.pages.flatMap((page) => page.comments) || [];
