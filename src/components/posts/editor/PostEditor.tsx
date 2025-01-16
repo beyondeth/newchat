@@ -363,7 +363,7 @@ export default function PostEditor() {
         mediaIds: attachments.map((a) => a.mediaId).filter(Boolean) as string[],
         booktitle: booktitle || undefined,
         bookauthor: bookauthor || undefined,
-        youtubeLinks,
+        youtubeLinks: youtubeLinks.length > 0 ? youtubeLinks : undefined,
       },
       {
         onSuccess: () => {
