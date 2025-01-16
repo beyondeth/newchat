@@ -44,7 +44,7 @@ interface DatabaseUserAttributes {
 
 const baseUrl =
   process.env.NODE_ENV === "production"
-    ? "https://newchat-flame.vercel.app"
+    ? "https://newchat-beta.vercel.app/"
     : "http://localhost:3000";
 
 export const google = new Google(
