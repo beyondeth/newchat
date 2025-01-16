@@ -116,7 +116,7 @@ import { Button } from "@/components/ui/button";
 import UserButton from "@/components/UserButton";
 import Image from "next/image";
 import Link from "next/link";
-import hashlogo from "@/assets/QQ.png";
+import hashlogo from "@/assets/mebook.png";
 // import { BookmarkPlus, Home, Mail } from "lucide-react";
 
 import prisma from "@/lib/prisma";
@@ -137,12 +137,14 @@ export default async function Navbar() {
     <header className="sticky top-0 z-10 bg-card shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
         {/* 왼쪽: 로고 */}
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-2xl font-bold text-primary"
-        >
-          <Image src={hashlogo} alt="Logo" width={50} height={50} priority />
-          <span>Community</span>
+        <Link href="/" className="flex items-center gap-2">
+          <Image src={hashlogo} alt="Logo" width={40} height={40} priority />
+          <div className="flex items-center">
+            <span className="text-sm font-semibold text-black"></span>
+            <span className="text-sm text-black ml-1">
+              『내생각과 책이 만나는 순간』
+            </span>
+          </div>
         </Link>
 
         {/* 오른쪽: 검색, 알림, 유저버튼 */}

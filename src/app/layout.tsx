@@ -22,12 +22,12 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | QQ",
-    default: "QQ",
+    template: "%s | mebook",
+    default: "mebook",
   },
   description: "커뮤니티",
   icons: {
-    icon: "/QQ.svg",
+    icon: "/mebook.png",
   },
 };
 
