@@ -142,7 +142,7 @@
 // }
 import { validateRequest } from "@/auth";
 import { Button } from "@/components/ui/button";
-import { BookmarkPlus, Home, MessageCircle } from "lucide-react";
+import { BookmarkPlus, Home, MessageCircle, PenSquare } from "lucide-react";
 import Link from "next/link";
 import NotificationsButton from "./NotificationsButton";
 
@@ -169,15 +169,24 @@ export default async function MenuBar({
       >
         <Link href="/">
           <Home />
-          {/* <span className="hidden lg:inline">홈</span> */}
         </Link>
       </Button>
-      <NotificationsButton
+      <Button
+        variant="ghost"
+        className="flex items-center justify-start gap-3"
+        title="Home"
+        asChild
+      >
+        <Link href="/">
+          <PenSquare />
+        </Link>
+      </Button>
+      {/* <NotificationsButton
         initialState={{ unreadCount: unreadNotificationCount || 0 }}
         isLoggedIn={!!user}
-      />
+      /> */}
       {/* 채팅기능 숨기기_나중에 구현 */}
-      <Button
+      {/* <Button
         variant="ghost"
         className="flex items-center justify-start gap-3"
         title="Messages"
@@ -185,9 +194,8 @@ export default async function MenuBar({
       >
         <Link href={user ? "/messages" : "/login"}>
           <MessageCircle />
-          {/* <span className="hidden lg:inline">메시지</span> */}
         </Link>
-      </Button>
+      </Button> */}
       <Button
         variant="ghost"
         className="flex items-center justify-start gap-3"
