@@ -300,7 +300,7 @@
 //                 disabled={isLoading}
 //               >
 //                 <MessageSquare className="h-3 w-3" />
-//                 {isLoading ? "처리 중..." : "답글달기"}
+//                 {isLoading ? "처리 중..." : ""}
 //               </button>
 //             )}
 //           </div>
@@ -589,7 +589,7 @@ export default function Comments({ post }: CommentsProps) {
       )}
 
       {status === "success" && !comments.length && (
-        <div className="text-center text-muted-foreground">
+        <div className="text-center text-sm text-muted-foreground">
           첫 번째 댓글을 남겨보세요.
         </div>
       )}

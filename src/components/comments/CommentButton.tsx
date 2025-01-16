@@ -27,7 +27,7 @@
 import { useSession } from "@/app/(main)/SessionProvider";
 import { PostData } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { MessageSquareText } from "lucide-react";
+import { MessageCircle, MessageSquareText } from "lucide-react";
 
 interface CommentButtonProps {
   post: PostData;
@@ -46,7 +46,7 @@ export default function CommentButton({ post, onClick }: CommentButtonProps) {
         user ? "hover:bg-gray-100" : "opacity-50 cursor-not-allowed",
       )}
     >
-      <MessageSquareText className="size-4" />
+      <MessageCircle className="size-4" />
       <div className="text-xs font-medium tabular-nums">
         {post._count.comments}
         <span className="hidden sm:inline"></span>

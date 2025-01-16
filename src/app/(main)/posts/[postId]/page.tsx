@@ -16,19 +16,6 @@ interface PageProps {
   params: { postId: string };
 }
 
-// const getPost = cache(async (postId: string, loggedInUserId: string) => {
-//   const post = await prisma.post.findUnique({
-//     where: {
-//       id: postId,
-//     },
-//     include: getPostDataInclude(loggedInUserId),
-//   });
-
-//   if (!post) notFound();
-
-//   return post;
-// });
-
 const getPost = cache(async (postId: string, loggedInUserId: string) => {
   // 포스트 조회와 조회수 증가를 트랜잭션으로 처리
   const post = await prisma.$transaction(async (tx) => {

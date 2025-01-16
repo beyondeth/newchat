@@ -986,7 +986,7 @@
 import { useSession } from "@/app/(main)/SessionProvider";
 import { CommentData, PostData } from "@/lib/types";
 import { formatRelativeDate } from "@/lib/utils";
-import { MessageSquare } from "lucide-react";
+import { MessageCircle, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import UserAvatar from "../UserAvatar";
@@ -1083,7 +1083,7 @@ export default function Comment({ comment, post, level }: CommentProps) {
                 className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
                 disabled={isLoading}
               >
-                <MessageSquare className="h-3 w-3" />
+                <MessageCircle className="h-3 w-3" />
                 {isLoading ? "처리 중..." : "답글달기"}
               </button>
             )}
@@ -1131,7 +1131,7 @@ export default function Comment({ comment, post, level }: CommentProps) {
                   d={showReplies ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
                 />
               </svg>
-              {showReplies ? "답글 숨기기" : `답글 ${visibleRepliesCount}개`}
+              {showReplies ? "숨기기" : `답글 ${visibleRepliesCount}개`}
             </button>
           </div>
         )}

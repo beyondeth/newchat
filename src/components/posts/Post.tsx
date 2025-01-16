@@ -1369,10 +1369,11 @@ export default function Post({ post }: PostProps) {
             onClick={() => setShowComments(!showComments)}
           />
           <div className="flex items-center gap-2">
-            <Eye className="size-4" />
+            {/* view 카운트 숨김 */}
+            {/* <Eye className="size-4" />
             <div className="text-xs font-medium tabular-nums">
               {post.viewCount}
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="flex items-center gap-2">
