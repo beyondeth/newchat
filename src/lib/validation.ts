@@ -48,6 +48,7 @@ export const createPostSchema = z.object({
 export const updateUserProfileSchema = z.object({
   displayName: requiredString,
   bio: z.string().max(1000, "최대 입력 가능한 글자수는 1000개 입니다"),
+  avatarUrl: z.string().nullable().optional(), // 추가된 부분
 });
 
 export type UpdateUserProfileValues = z.infer<typeof updateUserProfileSchema>;
