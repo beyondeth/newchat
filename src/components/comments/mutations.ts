@@ -1127,12 +1127,15 @@ export function useSubmitCommentMutation(postId: string) {
   return useMutation({
     mutationFn: submitComment,
     onMutate: async (newCommentData) => {
+      // 낙관적 업데이트를 위한 쿼리 취소
       const queryKey: QueryKey = ["comments", postId];
       await queryClient.cancelQueries({ queryKey });
 
+      // 현재 세션의 사용자 정보 가져오기
       const session = queryClient.getQueryData<{ user: UserData }>(["session"]);
       if (!session?.user) return;
 
+      // 임시 댓글 객체 생성
       const tempComment: Partial<CommentData> = {
         id: Date.now().toString(),
         content: newCommentData.content,
@@ -1144,9 +1147,11 @@ export function useSubmitCommentMutation(postId: string) {
         post: newCommentData.post,
       };
 
+      // 이전 데이터 백업
       const previousData =
         queryClient.getQueryData<InfiniteData<CommentsPage>>(queryKey);
 
+      // 낙관적 업데이트 수행
       queryClient.setQueryData<InfiniteData<CommentsPage>>(queryKey, (old) => {
         if (!old?.pages[0]) return old;
 
@@ -1160,9 +1165,13 @@ export function useSubmitCommentMutation(postId: string) {
                     comment.id === tempComment.parentId
                       ? {
                           ...comment,
+                          // replies: [
+                          //   ...(comment.replies || []),
+                          //   tempComment as CommentData,
+                          // ],
                           replies: [
-                            ...(comment.replies || []),
                             tempComment as CommentData,
+                            ...(comment.replies || []),
                           ],
                         }
                       : comment,
@@ -1180,6 +1189,7 @@ export function useSubmitCommentMutation(postId: string) {
       const queryKey: QueryKey = ["comments", postId];
       const postQueryKey: QueryKey = ["post-feed"];
 
+      // 성공 시 실제 데이터로 업데이트
       queryClient.setQueryData<InfiniteData<CommentsPage>>(
         queryKey,
         (oldData) => {
@@ -1190,18 +1200,17 @@ export function useSubmitCommentMutation(postId: string) {
             pages: [
               {
                 ...oldData.pages[0],
-                comments: oldData.pages[0].comments.map((comment) => {
-                  if (
-                    newComment.parentId &&
-                    comment.id === newComment.parentId
-                  ) {
-                    return {
-                      ...comment,
-                      replies: [...(comment.replies || []), newComment],
-                    };
-                  }
-                  return comment.id === newComment.id ? newComment : comment;
-                }),
+                comments: newComment.parentId
+                  ? oldData.pages[0].comments.map((comment) =>
+                      comment.id === newComment.parentId
+                        ? {
+                            ...comment,
+                            // replies: [...(comment.replies || []), newComment],
+                            replies: [newComment, ...(comment.replies || [])],
+                          }
+                        : comment,
+                    )
+                  : [newComment, ...oldData.pages[0].comments],
               },
               ...oldData.pages.slice(1),
             ],
@@ -1209,6 +1218,7 @@ export function useSubmitCommentMutation(postId: string) {
         },
       );
 
+      // 포스트의 댓글 카운트 업데이트
       if (!newComment.parentId) {
         queryClient.setQueriesData<InfiniteData<PostsPage>>(
           { queryKey: postQueryKey },
