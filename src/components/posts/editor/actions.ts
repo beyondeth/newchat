@@ -176,7 +176,7 @@ export async function submitPost(input: {
   mediaIds: string[];
   booktitle?: string;
   bookauthor?: string;
-  youtubeLinks?: string[]; // YouTube 링크 추가
+  youtubeLinks?: string[]; // YouTube 링크 추가s
 }) {
   try {
     const { user } = await validateRequest();
