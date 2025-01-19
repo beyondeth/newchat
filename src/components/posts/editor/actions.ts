@@ -207,15 +207,13 @@ export async function submitPost(input: {
           userId: user.id,
           booktitle,
           bookauthor,
-          attachments: {
-            connect: [
-              ...mediaIds.map((id) => ({ id })),
-              // YouTube 비디오 ID도 미디어로 추가 (선택적)
-              ...youtubeVideoIds.map((videoId) => ({
-                id: `youtube_${videoId}`,
-              })),
-            ],
-          },
+          // mediaIds가 있는 경우에만 attachments 연결
+          ...(mediaIds.length > 0 && {
+            attachments: {
+              connect: mediaIds.map((id) => ({ id })),
+            },
+          }),
+
           youtubeLinks: youtubeVideoIds, // 별도 필드로 저장
         },
         include: getPostDataInclude(user.id),
