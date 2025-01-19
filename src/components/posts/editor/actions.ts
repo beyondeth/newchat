@@ -214,7 +214,7 @@ export async function submitPost(input: {
             },
           }),
 
-          youtubeLinks: youtubeVideoIds, // 별도 필드로 저장
+          youtubeLinks: youtubeVideoIds, // 별도 필드로 저장s
         },
         include: getPostDataInclude(user.id),
       });
