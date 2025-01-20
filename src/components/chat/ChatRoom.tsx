@@ -2117,20 +2117,59 @@ const ChatInput: React.FC<{
   isBlocked: boolean;
 }> = ({ onSendMessage, onImageUpload, message, setMessage, isBlocked }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // 모바일 체크
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  // 모바일 여부 확인
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // textarea 높이 자동 조절
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [message]);
+
+  // 키 이벤트 핸들링
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // 모바일에서는 Enter 키 이벤트를 처리하지 않음
+    if (!isMobile && e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      onSendMessage(e as any);
+    }
+  };
 
   return (
     <form onSubmit={onSendMessage} className="p-4 border-t">
       <div className="flex gap-2">
-        <input
-          type="text"
+        <textarea
+          ref={textareaRef}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onKeyDown={handleKeyDown}
+          className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
           placeholder={
             isBlocked
               ? "차단된 사용자와는 대화할 수 없습니다"
               : "메시지를 입력하세요..."
           }
+          rows={1}
+          style={{
+            minHeight: "42px",
+            maxHeight: "120px",
+          }}
           disabled={isBlocked}
         />
         <button
@@ -2144,7 +2183,7 @@ const ChatInput: React.FC<{
         <button
           type="submit"
           className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300"
-          disabled={isBlocked}
+          disabled={isBlocked || !message.trim()}
         >
           <Send className="w-6 h-6" />
         </button>
