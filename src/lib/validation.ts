@@ -67,3 +67,20 @@ export const deleteAccountSchema = z.object({
 });
 
 export type DeleteAccountValues = z.infer<typeof deleteAccountSchema>;
+
+// chat
+
+export const createChatRoomSchema = z.object({
+  name: z.string().optional(),
+  type: z.enum(["DIRECT", "GROUP"]),
+  participantIds: z.array(z.string()).min(1, "최소 1명의 참여자가 필요합니다"),
+});
+
+export const sendMessageSchema = z.object({
+  content: requiredString.max(1000, "메시지는 최대 1000자까지 가능합니다"),
+  type: z.enum(["TEXT", "IMAGE", "FILE", "SYSTEM"]).default("TEXT"),
+  chatRoomId: requiredString,
+});
+
+export type CreateChatRoomValues = z.infer<typeof createChatRoomSchema>;
+export type SendMessageValues = z.infer<typeof sendMessageSchema>;

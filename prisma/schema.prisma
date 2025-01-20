@@ -22,160 +22,6 @@ datasource db {
 }
 
 
-// model User {
-//   id                    String         @id
-//   username              String         @unique
-//   displayName           String
-//   email                 String?        @unique
-//   passwordHash          String?
-//   googleId              String?        @unique
-//   kakaoId            String?        @unique
-//   avatarUrl             String?
-//   bio                   String?
-//   isAdmin Boolean @default(false)
-//   sessions              Session[]
-//   posts                 Post[]
-//   following             Follow[]       @relation("Following")
-//   followers             Follow[]       @relation("Followers")
-//   likes                 Like[]
-//   bookmarks             Bookmark[]
-//   comments              Comment[]
-//   receivedNotifications Notification[] @relation("Recipient")
-//   issuedNotifications   Notification[] @relation("Issuer")
-//   postViews PostView[]  // 이 줄 추가
-
-//   createdAt DateTime @default(now())
-
-//   @@map("users")
-// }
-
-// model Session {
-//   id        String   @id
-//   userId    String
-//   expiresAt DateTime
-//   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-//   @@map("sessions")
-// }
-
-// model Follow {
-//   followerId  String
-//   follower    User   @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
-//   followingId String
-//   following   User   @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
-
-//   @@unique([followerId, followingId])
-//   @@map("follows")
-// }
-
-// model Post {
-//   id                  String         @id @default(cuid())
-//   content             String
-//   userId              String
-//   user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   attachments         Media[]
-//   likes               Like[]
-//   views PostView[]
-//   viewCount Int @default(0)
-//   bookmarks           Bookmark[]
-//   comments            Comment[]
-//   linkedNotifications Notification[]
-
-//   createdAt DateTime @default(now())
-
-//   @@map("posts")
-// }
-
-// model Media {
-//   id     String    @id @default(cuid())
-//   postId String?
-//   post   Post?     @relation(fields: [postId], references: [id], onDelete: SetNull)
-//   type   MediaType
-//   url    String
-
-//   createdAt DateTime @default(now())
-
-//   @@map("post_media")
-// }
-
-// enum MediaType {
-//   IMAGE
-//   VIDEO
-// }
-
-// model Comment {
-//   id      String @id @default(cuid())
-//   content String
-//   userId  String
-//   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   postId  String
-//   post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-//   createdAt DateTime @default(now())
-
-//   @@map("comments")
-// }
-
-// model Like {
-//   userId String
-//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   postId String
-//   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-//   @@unique([userId, postId])
-//   @@map("likes")
-// }
-
-// model PostView {
-//   id        String   @id @default(cuid())
-//   post      Post     @relation(fields: [postId], references: [id])
-//   postId    String
-//   user      User     @relation(fields: [userId], references: [id])
-//   userId    String
-//   viewedAt  DateTime @default(now())
-
-// @@unique([postId, userId])
-//   // @@unique([userId, postId])
-//   // @@index([userId])
-//   // @@index([postId])
-//   // @@map("views")
-// }
-
-// model Bookmark {
-//   id     String @id @default(cuid())
-//   userId String
-//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-//   postId String
-//   post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-//   createdAt DateTime @default(now())
-
-//   @@unique([userId, postId])
-//   @@map("bookmarks")
-// }
-
-// model Notification {
-//   id          String           @id @default(cuid())
-//   recipientId String
-//   recipient   User             @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
-//   issuerId    String
-//   issuer      User             @relation("Issuer", fields: [issuerId], references: [id], onDelete: Cascade)
-//   postId      String?
-//   post        Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
-//   type        NotificationType
-//   read        Boolean          @default(false)
-
-//   createdAt DateTime @default(now())
-
-//   @@map("notifications")
-// }
-
-// enum NotificationType {
-//   LIKE
-//   FOLLOW
-//   COMMENT
-// }
-
 model User {
   id                    String         @id
   username              String         @unique
@@ -202,7 +48,10 @@ model User {
   issuedNotifications   Notification[] @relation("Issuer")
   postViews             PostView[]
   blogPostViews         BlogPostView[]
-
+  chatParticipations ChatParticipant[] // chat
+  chatMessages      ChatMessage[] //chat
+ blockedUsers   UserBlock[] @relation("Blocker")  // 내가 차단한 사용자들
+  blockedByUsers UserBlock[] @relation("Blocked")  // 나를 차단한 사용자들
   createdAt DateTime @default(now())
 
   @@map("users")
@@ -429,4 +278,91 @@ enum NotificationType {
   COMMENT
   BLOG_LIKE
   BLOG_COMMENT
+}
+
+// prisma/schema.prisma에 추가할 모델들
+
+// 채팅방 모델
+model ChatRoom {
+  id            String         @id @default(cuid())
+  name          String?       // 그룹챗의 경우 이름이 있을 수 있음
+  type          ChatRoomType  @default(DIRECT)
+  lastMessageAt DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // 관계
+  participants  ChatParticipant[]
+  messages      ChatMessage[]
+  
+  isBlocked     Boolean   @default(false)  // 채팅방이 차단되었는지 여부
+  blockedAt     DateTime? // 차단된 시간
+  blockedById   String?   // 차단한 사용자 ID
+  blockReason   String?   // 차단 사유
+  @@map("chat_rooms")
+}
+
+enum ChatRoomType {
+  DIRECT    // 1:1 채팅
+  GROUP     // 그룹 채팅
+}
+
+model ChatParticipant {
+  id            String    @id @default(cuid())
+  userId        String    // Lucia의 User.id와 매칭
+  chatRoomId    String
+  lastReadAt    DateTime  @default(now())
+  joinedAt      DateTime  @default(now())
+  
+  // 관계
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chatRoom      ChatRoom  @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, chatRoomId])
+  @@index([userId])
+  @@index([chatRoomId])
+  @@map("chat_participants")
+}
+
+model ChatMessage {
+  id          String        @id @default(cuid())
+  content     String        @db.Text
+  type        ChatMessageType @default(TEXT)
+  createdAt   DateTime      @default(now())
+  readBy      String[]      // 읽은 사용자 ID 배열
+  
+  // 관계
+  userId      String      // Lucia의 User.id와 매칭
+  chatRoomId  String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chatRoom    ChatRoom    @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([chatRoomId])
+  @@map("chat_messages")
+}
+
+enum ChatMessageType {
+  TEXT
+  IMAGE
+  FILE
+  SYSTEM
+}
+
+// 유저 차단 모델
+model UserBlock {
+  id            String    @id @default(cuid())
+  blockerId     String    // 차단한 사용자
+  blockedId     String    // 차단된 사용자
+  reason        String?   // 차단 사유 (선택사항)
+  createdAt     DateTime  @default(now())
+  
+  // 관계 설정
+  blocker       User      @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked       User      @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+  @@index([blockedId])
+  @@map("user_blocks")
 }
