@@ -385,20 +385,16 @@ export function useSubmitPostMutation() {
             const firstPage = oldData.pages[0];
             if (!firstPage) return oldData;
 
-            const updatedData: InfiniteData<PostsPage> = {
+            return {
               pageParams: oldData.pageParams,
-              pages: oldData.pages.map((page, i) => {
-                if (i === 0) {
-                  return {
-                    ...page,
-                    posts: [newPost, ...page.posts],
-                  };
-                }
-                return page;
-              }),
+              pages: [
+                {
+                  ...firstPage,
+                  posts: [newPost, ...firstPage.posts],
+                },
+                ...oldData.pages.slice(1),
+              ],
             };
-
-            return updatedData;
           },
         );
 
