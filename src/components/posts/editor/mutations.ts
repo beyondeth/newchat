@@ -342,7 +342,7 @@
 
 import { useSession } from "@/app/(main)/SessionProvider";
 import { useToast } from "@/components/ui/use-toast";
-import { PostsPage } from "@/lib/types";
+import { PostsPage, PostData } from "@/lib/types";
 import {
   InfiniteData,
   QueryFilters,
@@ -365,6 +365,11 @@ export function useSubmitPostMutation() {
       });
     },
     onSuccess: async (newPost) => {
+      // newPost가 PostData 타입인지 확인
+      if ("error" in newPost || !("user" in newPost)) {
+        return;
+      }
+
       const queryFilter = {
         queryKey: ["post-feed", endpoint],
         predicate(query) {
@@ -385,10 +390,9 @@ export function useSubmitPostMutation() {
             const firstPage = oldData.pages[0];
             if (!firstPage) return oldData;
 
-            // firstPage의 모든 속성을 유지하면서 posts 배열만 업데이트
             const updatedFirstPage = {
               ...firstPage,
-              posts: [newPost, ...firstPage.posts],
+              posts: [newPost as PostData, ...firstPage.posts],
             };
 
             return {
