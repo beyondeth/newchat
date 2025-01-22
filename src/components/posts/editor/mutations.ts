@@ -291,7 +291,7 @@ export function useSubmitPostMutation() {
       } satisfies QueryFilters;
 
       const debouncedQueries = setTimeout(() => {
-        queryClient.setQueriesData<InfiniteData<PostsPage, string | null>>(
+        queryClient.setQueriesData<InfiniteData<PostsPage>>(
           queryFilter,
           (oldData) => {
             if (!oldData) return oldData; // oldData가 없으면 그대로 반환
