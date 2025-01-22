@@ -47,6 +47,8 @@
 //   }
 // }
 
+// app/chat/romms/[roomId]/messages/route.ts
+
 import { validateRequest } from "@/auth";
 import { NextResponse } from "next/server";
 import { redisChat } from "@/lib/redis";

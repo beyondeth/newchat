@@ -211,6 +211,8 @@
 //   return new Response(stream, { headers });
 // }
 
+// app/api/chat/subscribe/route.ts
+
 import { NextRequest } from "next/server";
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
