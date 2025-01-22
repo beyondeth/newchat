@@ -1216,13 +1216,15 @@
 //   );
 // }
 
+// readl world //
+
 "use client";
 
 import { useSession } from "@/app/(main)/SessionProvider";
 import { PostData } from "@/lib/types";
 import { cn, formatRelativeDate } from "@/lib/utils";
 import { Media } from "@prisma/client";
-import { ChevronRight, Eye, MessageSquareText, X } from "lucide-react";
+import { ChevronRight, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef } from "react";

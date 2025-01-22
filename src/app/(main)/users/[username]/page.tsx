@@ -208,8 +208,8 @@ export default async function Page({ params: { username } }: PageProps) {
       <div className="w-full min-w-0 space-y-5">
         <UserProfile user={user} loggedInUserId={loggedInUser.id} />
         <div className="rounded-2xl bg-card p-5 shadow-sm">
-          <h2 className="text-center text-2xl font-bold">
-            {user.displayName}님의 게시물
+          <h2 className="text-center text-sm">
+            『 {user.displayName} 』 님의 작성글
           </h2>
         </div>
         <UserPosts userId={user.id} />
@@ -242,19 +242,19 @@ async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
       <div className="flex flex-wrap gap-3 sm:flex-nowrap">
         <div className="me-auto space-y-3">
           <div>
-            <h1 className="text-3xl font-bold">{user.displayName}</h1>
-            <div className="text-muted-foreground">@{user.username}</div>
+            <h1 className="text-md font-bold">{user.displayName}</h1>
+            <div className="text-sm text-muted-foreground">
+              @{user.username}
+            </div>
           </div>
-          <div>
-            가입일:{" "}
+          <div className=" text-sm">
+            가입일:
             {formatDate(user.createdAt, "yyyy년 M월 d일", { locale: ko })}
           </div>
           <div className="flex items-center gap-3">
-            <span>
-              게시물:{" "}
-              <span className="font-semibold">
-                {formatNumber(user._count.posts)}
-              </span>
+            <span className="text-sm">
+              게시물:
+              <span className="">{formatNumber(user._count.posts)}</span>
             </span>
             <FollowerCount userId={user.id} initialState={followerInfo} />
           </div>
@@ -269,7 +269,7 @@ async function UserProfile({ user, loggedInUserId }: UserProfileProps) {
         <>
           <hr />
           <Linkify>
-            <div className="overflow-hidden whitespace-pre-line break-words">
+            <div className="overflow-hidden whitespace-pre-line break-words text-sm">
               {user.bio}
             </div>
           </Linkify>

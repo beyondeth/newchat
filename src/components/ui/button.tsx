@@ -17,6 +17,7 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
+        third: "bg-zinc-800 text-white hover:bg-zinc-700", // 수정된 부분
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
