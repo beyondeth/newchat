@@ -294,20 +294,22 @@ export function useSubmitPostMutation() {
         queryClient.setQueriesData<InfiniteData<PostsPage, string | null>>(
           queryFilter,
           (oldData) => {
-            const firstPage = oldData?.pages[0];
+            if (!oldData) return oldData; // oldData가 없으면 그대로 반환
 
-            if (firstPage) {
-              return {
-                pageParams: oldData.pageParams,
-                pages: [
-                  {
-                    posts: [newPost, ...firstPage.posts],
-                    nextCursor: firstPage.nextCursor,
-                  },
-                  ...oldData.pages.slice(1),
-                ],
-              };
-            }
+            const firstPage = oldData.pages[0];
+            if (!firstPage) return oldData; // 첫 페이지가 없으면 그대로 반환
+
+            // 데이터가 있을 때의 처리
+            return {
+              pageParams: oldData.pageParams,
+              pages: [
+                {
+                  posts: [newPost, ...firstPage.posts],
+                  nextCursor: firstPage.nextCursor,
+                },
+                ...oldData.pages.slice(1),
+              ],
+            };
           },
         );
 
