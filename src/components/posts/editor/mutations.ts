@@ -385,15 +385,15 @@ export function useSubmitPostMutation() {
             const firstPage = oldData.pages[0];
             if (!firstPage) return oldData;
 
+            // firstPage의 모든 속성을 유지하면서 posts 배열만 업데이트
+            const updatedFirstPage = {
+              ...firstPage,
+              posts: [newPost, ...firstPage.posts],
+            };
+
             return {
               pageParams: oldData.pageParams,
-              pages: [
-                {
-                  ...firstPage,
-                  posts: [newPost, ...firstPage.posts],
-                },
-                ...oldData.pages.slice(1),
-              ],
+              pages: [updatedFirstPage, ...oldData.pages.slice(1)],
             };
           },
         );
