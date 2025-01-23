@@ -35,7 +35,6 @@ export const createPostSchema = z.object({
   content: z
     .string()
     .trim()
-    .min(10, "본문 내용은 최소 10자 이상 입력해주세요.")
     .max(3000, "본 문 내용은 최대 3000자까지 입력가능합니다."),
   mediaIds: z.array(z.string()).max(5, "5개까지만 업로드 가능합니다"),
   booktitle: z
