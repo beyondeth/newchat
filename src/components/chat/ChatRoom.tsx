@@ -3,7 +3,7 @@
 "use client";
 
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Send, Camera, MoreVertical } from "lucide-react";
+import { Send, Camera, MoreVertical, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import { User } from "lucia";
 import { formatRelativeDate } from "@/lib/utils";
@@ -12,12 +12,18 @@ import {
   ChatRoomData,
   RedisChatMessage,
 } from "@/lib/chattypes";
-import PusherClient from "pusher-js";
+import pusherClient from "@/lib/pusher-client";
 import type { Channel } from "pusher-js";
-
-const pusherClient = new PusherClient(process.env.NEXT_PUBLIC_PUSHER_APP_KEY!, {
-  cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
-});
+import { useRouter } from "next/navigation";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { LeaveRoomAlert } from "@/components/chat/LeaveRoomAlert";
+import { leaveChatRoom } from "@/lib/api/chat";
+import {
+  sendMessage,
+  blockUser,
+  unblockUser,
+  getMessages,
+} from "@/lib/api/chat";
 
 interface ChatRoomProps {
   roomId: string;
@@ -26,37 +32,67 @@ interface ChatRoomProps {
 }
 
 const ChatHeader: React.FC<{
+  roomId: string;
   otherParticipant: ChatParticipant["user"] | undefined;
   isBlocked: boolean;
   onBlock: () => void;
   onUnblock: () => void;
-}> = ({ otherParticipant, isBlocked, onBlock, onUnblock }) => {
+}> = ({ roomId, otherParticipant, isBlocked, onBlock, onUnblock }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [showLeaveAlert, setShowLeaveAlert] = useState(false);
+
+  const handleBack = () => {
+    queryClient.prefetchQuery({
+      queryKey: ["chatRooms"],
+      queryFn: () => fetch("/api/chat/rooms").then((res) => res.json()),
+    });
+    router.push("/messages");
+  };
+
+  const handleLeave = async () => {
+    try {
+      await leaveChatRoom(roomId);
+      router.push("/messages");
+    } catch (error) {
+      console.error("Failed to leave chat room:", error);
+    }
+  };
 
   return (
     <div className="p-4 border-b flex justify-between items-center">
-      <div className="flex items-center">
-        <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-200">
-          {otherParticipant?.avatarUrl ? (
-            <Image
-              src={otherParticipant.avatarUrl}
-              alt={otherParticipant.displayName}
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              {otherParticipant?.displayName[0]}
-            </div>
-          )}
-        </div>
-        <div className="ml-3">
-          <h2 className="text-lg font-semibold">
-            {otherParticipant?.displayName}
-          </h2>
-          {isBlocked && (
-            <span className="text-sm text-red-500">차단된 사용자</span>
-          )}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={handleBack}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          aria-label="뒤로 가기"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <div className="flex items-center">
+          <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+            {otherParticipant?.avatarUrl ? (
+              <Image
+                src={otherParticipant.avatarUrl}
+                alt={otherParticipant.displayName}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                {otherParticipant?.displayName[0]}
+              </div>
+            )}
+          </div>
+          <div className="ml-3">
+            <h2 className="text-lg font-semibold">
+              {otherParticipant?.displayName}
+            </h2>
+            {isBlocked && (
+              <span className="text-sm text-red-500">차단된 사용자</span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -88,9 +124,20 @@ const ChatHeader: React.FC<{
                 사용자 차단
               </button>
             )}
+            <button
+              onClick={() => setShowLeaveAlert(true)}
+              className="w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-gray-100 border-t"
+            >
+              나가기
+            </button>
           </div>
         )}
       </div>
+      <LeaveRoomAlert
+        isOpen={showLeaveAlert}
+        onClose={() => setShowLeaveAlert(false)}
+        onConfirm={handleLeave}
+      />
     </div>
   );
 };
@@ -125,60 +172,127 @@ const ChatMessages: React.FC<{
     }
   }, [messages, currentUser.id]);
 
+  // 안전한 날짜 포맷팅 함수
+  const formatMessageDate = (timestamp: number) => {
+    try {
+      const date = new Date(timestamp);
+      // timestamp가 유효한지 확인
+      if (isNaN(date.getTime())) {
+        return null;
+      }
+
+      return date.toLocaleDateString("ko-KR", {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        weekday: "short",
+      });
+    } catch (error) {
+      console.error("날짜 포맷팅 오류:", error);
+      return null;
+    }
+  };
+
+  // 이전 메시지의 날짜를 추적
+  let currentDate = "";
+
+  // formatTime 함수 추가
+  const formatTime = (timestamp: number) => {
+    try {
+      const date = new Date(timestamp);
+      return date
+        .toLocaleTimeString("ko-KR", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })
+        .replace(/^0/, "")
+        .replace(" ", "");
+    } catch (error) {
+      return "";
+    }
+  };
+
   return (
-    <div ref={containerRef} className="flex-1 overflow-y-auto p-4">
-      {messages.map((msg) => (
-        <div
-          key={msg.id}
-          className={`flex mb-4 ${
-            msg.userId === currentUser.id ? "justify-end" : "justify-start"
-          }`}
-        >
-          {msg.userId !== currentUser.id && (
-            <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gray-200 mr-2">
-              {otherParticipant?.avatarUrl ? (
-                <Image
-                  src={otherParticipant.avatarUrl}
-                  alt={otherParticipant.displayName}
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-sm">
-                  {otherParticipant?.displayName[0]}
+    <div ref={containerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+      {messages.map((message, index) => {
+        // 안전하게 날짜 처리
+        const messageDate = formatMessageDate(message.createdAt);
+
+        // 날짜가 유효하고 이전 날짜와 다를 때만 구분선 표시
+        const showDateDivider = messageDate && messageDate !== currentDate;
+        if (showDateDivider) {
+          currentDate = messageDate;
+        }
+
+        // 여기서 메시지 소유자 판단
+        const isMyMessage = message.userId === currentUser.id;
+
+        return (
+          <React.Fragment key={message.id}>
+            {showDateDivider && messageDate && (
+              <div className="flex justify-center my-4">
+                <div className="bg-[#2F2F2F] text-gray-300 px-4 py-1 rounded-full text-sm">
+                  {messageDate}
+                </div>
+              </div>
+            )}
+
+            <div
+              className={`flex ${isMyMessage ? "justify-end" : "justify-start"} mb-2`}
+            >
+              {!isMyMessage && (
+                <div className="flex flex-col">
+                  <div className="flex items-start gap-2 mb-1">
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+                      {otherParticipant?.avatarUrl ? (
+                        <Image
+                          src={otherParticipant.avatarUrl}
+                          alt=""
+                          width={40}
+                          height={40}
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-sm">
+                          {otherParticipant?.displayName?.[0]}
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-[15px] text-gray-900 mt-1">
+                      {otherParticipant?.displayName}
+                    </span>
+                  </div>
+
+                  <div className="flex items-end gap-1 ml-12">
+                    <div className="px-3 py-2 rounded-lg bg-[#333333] text-white max-w-[260px]">
+                      <span className="text-[15px] break-words leading-[22px]">
+                        {message.content}
+                      </span>
+                    </div>
+                    <span className="text-[13px] text-gray-500 min-w-[45px]">
+                      {formatTime(message.createdAt)}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {isMyMessage && (
+                <div className="flex items-end gap-1">
+                  <span className="text-[13px] text-gray-500 min-w-[45px] text-right">
+                    {formatTime(message.createdAt)}
+                  </span>
+                  <div className="px-3 py-2 rounded-lg bg-yellow-400 text-black max-w-[260px]">
+                    <span className="text-[15px] break-words leading-[22px]">
+                      {message.content}
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
-          )}
-
-          <div className="max-w-[70%]">
-            {msg.type === ChatMessageType.IMAGE ? (
-              <div className="rounded-lg overflow-hidden">
-                <Image
-                  src={msg.content}
-                  alt="Uploaded image"
-                  width={300}
-                  height={200}
-                  className="object-contain"
-                />
-              </div>
-            ) : (
-              <div
-                className={`px-4 py-2 rounded-lg ${
-                  msg.userId === currentUser.id
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-100"
-                }`}
-              >
-                <div className="text-sm break-words">{msg.content}</div>
-              </div>
-            )}
-            <div className="text-xs text-gray-500 mt-1">
-              {msg.createdAt && formatRelativeDate(new Date(msg.createdAt))}
-            </div>
-          </div>
-        </div>
-      ))}
+          </React.Fragment>
+        );
+      })}
       <div ref={messagesEndRef} />
     </div>
   );
@@ -219,15 +333,22 @@ const ChatInput: React.FC<{
 
   // 키 이벤트 핸들링
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // 모바일에서는 Enter 키 이벤트를 처리하지 않음
     if (!isMobile && e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      onSendMessage(e as any);
+      console.log("[ChatRoom] Enter 키 이벤트 발생");
+      e.currentTarget.form?.requestSubmit();
     }
   };
 
   return (
-    <form onSubmit={onSendMessage} className="p-4 border-t">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        console.log("[ChatRoom] 폼 제출 이벤트 발생");
+        onSendMessage(e);
+      }}
+      className="p-4 border-t"
+    >
       <div className="flex gap-2">
         <textarea
           ref={textareaRef}
@@ -253,7 +374,7 @@ const ChatInput: React.FC<{
           className="p-2 text-gray-500 hover:text-gray-700"
           disabled={isBlocked}
         >
-          <Camera className="w-6 h-6" />
+          {/* <Camera className="w-6 h-6" /> */}
         </button>
         <button
           type="submit"
@@ -284,20 +405,16 @@ export default function ChatRoom({
   const [message, setMessage] = useState("");
   const [isBlocked, setIsBlocked] = useState(initialRoom.isBlocked);
   const [error, setError] = useState<string | null>(null);
+  const isSending = useRef(false);
+  const router = useRouter();
 
   useEffect(() => {
     const loadMessages = async () => {
       try {
-        // 최근 메시지 20개를 가져옵니다
-        const response = await fetch(
-          `/api/chat/rooms/${roomId}/messages?limit=20`,
-        );
-        if (!response.ok) {
-          throw new Error("Failed to load messages");
-        }
-        const data = await response.json();
-        // reverse() 제거 - 최근 메시지가 배열의 끝에 오도록
+        console.log("[ChatRoom] 초기 메시지 로드 시작");
+        const data = await getMessages(roomId, 20);
         setMessages(data.messages);
+        console.log("[ChatRoom] 초기 메시지 로드 완료");
       } catch (error) {
         console.error("Failed to load messages:", error);
         setError("Failed to load messages. Please try again.");
@@ -307,13 +424,18 @@ export default function ChatRoom({
     loadMessages();
 
     const channelName = `chat_room_${roomId}`;
+    console.log("[ChatRoom] Pusher 채널 구독:", channelName);
     const channel = pusherClient.subscribe(channelName);
 
     channel.bind("new-message", (newMessage: RedisChatMessage) => {
+      console.log("[ChatRoom] Pusher 새 메시지 수신:", {
+        messageId: newMessage.id,
+      });
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
     return () => {
+      console.log("[ChatRoom] Pusher 구독 해제:", channelName);
       channel.unbind("new-message");
       pusherClient.unsubscribe(channelName);
     };
@@ -321,27 +443,25 @@ export default function ChatRoom({
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSending.current) return;
     if (!message.trim() || isBlocked) return;
 
     try {
-      const response = await fetch(`/api/chat/rooms/${roomId}/send`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: message.trim(),
-          type: ChatMessageType.TEXT,
-          chatRoomId: roomId,
-        }),
-      });
+      isSending.current = true;
+      console.log("[ChatRoom] handleSendMessage 실행");
 
-      if (!response.ok) {
-        throw new Error("Failed to send message");
-      }
+      await sendMessage(roomId, {
+        content: message.trim(),
+        type: ChatMessageType.TEXT,
+        chatRoomId: roomId,
+      });
 
       setMessage("");
     } catch (error) {
       console.error("Failed to send message:", error);
       setError("Failed to send message. Please try again.");
+    } finally {
+      isSending.current = false;
     }
   };
 
@@ -369,22 +489,13 @@ export default function ChatRoom({
   };
 
   const handleBlock = async () => {
-    const otherParticipant: ChatParticipant["user"] | undefined =
-      initialRoom.participants.find((p) => p.user.id !== currentUser.id)?.user;
+    const otherParticipant = initialRoom.participants.find(
+      (p) => p.user.id !== currentUser.id,
+    )?.user;
     if (!otherParticipant) return;
 
     try {
-      const response = await fetch("/api/chat/block", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          blockedId: otherParticipant.id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to block user");
-      }
+      await blockUser(otherParticipant.id);
       setIsBlocked(true);
     } catch (error) {
       console.error("Failed to block user:", error);
@@ -399,17 +510,7 @@ export default function ChatRoom({
     if (!otherParticipant) return;
 
     try {
-      const response = await fetch("/api/chat/unblock", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          blockedId: otherParticipant.id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to unblock user");
-      }
+      await unblockUser(otherParticipant.id);
       setIsBlocked(false);
     } catch (error) {
       console.error("Failed to unblock user:", error);
@@ -424,6 +525,7 @@ export default function ChatRoom({
   return (
     <div className="flex flex-col h-full bg-white rounded-lg shadow">
       <ChatHeader
+        roomId={roomId}
         otherParticipant={otherParticipant}
         isBlocked={isBlocked}
         onBlock={handleBlock}

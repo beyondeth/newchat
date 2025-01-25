@@ -48,31 +48,27 @@ import prisma from "@/lib/prisma";
 import { chatRoomSelect } from "@/lib/chattypes";
 
 export async function GET(request: Request) {
-  try {
-    const { user } = await validateRequest();
-    if (!user) {
-      return new Response("Unauthorized", { status: 401 });
-    }
-
-    const rooms = await prisma.chatRoom.findMany({
-      where: {
-        participants: {
-          some: {
-            userId: user.id,
-          },
-        },
-      },
-      select: chatRoomSelect,
-      orderBy: {
-        lastMessageAt: "desc",
-      },
-    });
-
-    return NextResponse.json(rooms);
-  } catch (error) {
-    console.error("Failed to get chat rooms:", error);
-    return new Response("Internal Server Error", { status: 500 });
+  const { user } = await validateRequest();
+  if (!user) {
+    return new Response("Unauthorized", { status: 401 });
   }
+
+  const rooms = await prisma.chatRoom.findMany({
+    where: {
+      participants: {
+        some: { userId: user.id }
+      }
+    },
+    select: chatRoomSelect,
+    orderBy: { lastMessageAt: "desc" }
+  });
+
+  return new Response(JSON.stringify(rooms), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'max-age=30, stale-while-revalidate=60'
+    }
+  });
 }
 
 // 새 채팅방 생성

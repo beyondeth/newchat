@@ -1,12 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import UserAvatar from "@/components/UserAvatar";
 
 interface User {
   id: string;
   displayName: string;
-  avatarUrl?: string | null;
+  avatarUrl: string | null;
+  username: string;
 }
 
 interface NewChatUserListProps {
@@ -41,19 +42,12 @@ export default function NewChatUserList({ users }: NewChatUserListProps) {
           onClick={() => handleCreateChat(user.id)}
           className="flex items-center p-4 border rounded-lg hover:bg-gray-50 w-full"
         >
-          <div className="relative w-10 h-10 rounded-full mr-3 overflow-hidden">
-            {user.avatarUrl ? (
-              <Image
-                src={user.avatarUrl}
-                alt={user.displayName}
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                {user.displayName[0]}
-              </div>
-            )}
+          <div className="relative w-10 h-10 mr-3">
+            <UserAvatar
+              avatarUrl={user.avatarUrl}
+              size={40}
+              className="rounded-full"
+            />
           </div>
           <div className="text-left">
             <p className="font-medium">{user.displayName}</p>

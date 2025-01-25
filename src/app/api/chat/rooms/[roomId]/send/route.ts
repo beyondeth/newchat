@@ -184,9 +184,8 @@ export async function POST(
       readBy: [user.id],
     };
 
-    // Redis에 메시지 저장 및 발행
+    // Redis에 저장하면서 Pusher 이벤트도 발생
     await redisChat.saveMessage(roomId, message);
-    await redisChat.publishMessage(roomId, message);
 
     return NextResponse.json(message);
   } catch (error) {

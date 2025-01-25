@@ -1,10 +1,12 @@
-// app/messages/new/page.tsx
+// app/messages/page.tsx
 import { validateRequest } from "@/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
-import NewChatUserList from "@/components/chat/NewChatUserList";
+import ChatRoomList from "@/components/chat/ChatRoomList";
+import { chatRoomSelect } from "@/lib/chattypes";
+import Navbar from "@/app/(main)/Navbar";
 
-export default async function NewChatPage() {
+export default async function MessagesPage() {
   const { user } = await validateRequest();
   if (!user) redirect("/login");
 
@@ -28,13 +30,32 @@ export default async function NewChatPage() {
     select: {
       id: true,
       displayName: true,
+      avatarUrl: true,
+      username: true,
+    },
+  });
+
+  // 채팅방 목록 조회
+  const rooms = await prisma.chatRoom.findMany({
+    where: {
+      participants: {
+        some: {
+          userId: user.id,
+        },
+      },
+    },
+    select: chatRoomSelect,
+    orderBy: {
+      lastMessageAt: "desc",
     },
   });
 
   return (
-    <div className="container max-w-4xl mx-auto py-6">
-      <h1 className="text-2xl font-bold mb-6">새로운 대화 시작</h1>
-      <NewChatUserList users={users} />
-    </div>
+    <>
+      <Navbar />
+      <div className="container max-w-4xl mx-auto py-6">
+        <ChatRoomList rooms={rooms} currentUserId={user.id} />
+      </div>
+    </>
   );
 }
