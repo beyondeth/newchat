@@ -947,6 +947,44 @@ export interface MessageCountInfo {
   unreadCount: number;
 }
 
+// 인기게시물 탑10 //
+// lib/types.ts
+export type TopPost = {
+  id: string;
+  content: string;
+  user_id: string;
+  viewCount: number;
+  likes_count: bigint; // SQL COUNT 결과는 bigint
+  comments_count: bigint;
+  bookmarks_count: bigint;
+  score: number;
+  createdAt: Date;
+
+  // JOIN으로 가져오는 user 관련 필드들
+  userId: string;
+  username: string;
+  displayName: string;
+  avatarUrl: string | null;
+};
+
+// 변환된 결과 타입
+export type ProcessedTopPost = {
+  id: string;
+  content: string;
+  viewCount: number;
+  likes: number;
+  comments: number;
+  bookmarks: number;
+  score: number;
+  createdAt: Date;
+  user: {
+    id: string;
+    username: string;
+    displayName: string;
+    avatarUrl: string | null;
+  };
+};
+
 // import { Prisma } from "@prisma/client";
 
 // export function getUserDataSelect(loggedInUserId: string) {
