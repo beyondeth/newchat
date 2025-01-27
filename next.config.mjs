@@ -39,6 +39,18 @@ const nextConfig = {
         protocol: "https",
         hostname: "img1.kakaocdn.net",
       },
+      {
+        protocol: "https",
+        hostname: "shopping-phinf.pstatic.net",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "shopping-phinf.pstatic.net",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   rewrites: () => {

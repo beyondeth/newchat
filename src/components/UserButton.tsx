@@ -160,7 +160,7 @@ export default function UserButton({ className }: UserButtonProps) {
         <Link href={`/messages`}>
           <DropdownMenuItem>
             <MessageCircle className="mr-2 size-4" />
-            채팅(유료)
+            채팅
           </DropdownMenuItem>
         </Link>
         <Link href={`/bookmarks`}>

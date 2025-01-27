@@ -154,16 +154,92 @@
 //   }
 // }
 
+// "use server";
+
+// import { validateRequest } from "@/auth";
+// import prisma from "@/lib/prisma";
+// import { getPostDataInclude } from "@/lib/types";
+// import { createPostSchema } from "@/lib/validation";
+// import { revalidatePath } from "next/cache";
+// import { ZodError } from "zod";
+
+// // 유튜브 링크 추출 함수 추가
+// function extractYouTubeVideoId(url: string): string | null {
+//   const youtubeRegex =
+//     /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+//   const match = url.match(youtubeRegex);
+//   return match ? match[1] : null;
+// }
+
+// export async function submitPost(input: {
+//   content: string;
+//   mediaIds: string[];
+//   booktitle?: string;
+//   bookauthor?: string;
+//   youtubeLinks?: string[]; // YouTube 링크 추가s
+// }) {
+//   try {
+//     const { user } = await validateRequest();
+//     if (!user) throw new Error("Unauthorized");
+
+//     const validationResult = createPostSchema.safeParse(input);
+//     if (!validationResult.success) {
+//       throw new Error(validationResult.error.errors[0].message);
+//     }
+
+//     const {
+//       content,
+//       mediaIds,
+//       booktitle,
+//       bookauthor,
+//       youtubeLinks = [], // 기본값 설정
+//     } = validationResult.data;
+
+//     // YouTube 링크에서 비디오 ID 추출
+//     const youtubeVideoIds = youtubeLinks
+//       .map(extractYouTubeVideoId)
+//       .filter(Boolean) as string[];
+
+//     const newPost = await prisma.$transaction(async (tx) => {
+//       const post = await tx.post.create({
+//         data: {
+//           content,
+//           userId: user.id,
+//           booktitle,
+//           bookauthor,
+//           // mediaIds가 있는 경우에만 attachments 연결
+//           ...(mediaIds.length > 0 && {
+//             attachments: {
+//               connect: mediaIds.map((id) => ({ id })),
+//             },
+//           }),
+
+//           youtubeLinks: youtubeVideoIds, // 별도 필드로 저장s
+//         },
+//         include: getPostDataInclude(user.id),
+//       });
+
+//       return post;
+//     });
+
+//     return newPost;
+//   } catch (error) {
+//     console.error("Error creating post:", error);
+//     if (error instanceof ZodError) {
+//       throw new Error(error.errors[0].message);
+//     }
+//     throw error;
+//   }
+// }
+
 "use server";
 
 import { validateRequest } from "@/auth";
 import prisma from "@/lib/prisma";
 import { getPostDataInclude } from "@/lib/types";
 import { createPostSchema } from "@/lib/validation";
-import { revalidatePath } from "next/cache";
 import { ZodError } from "zod";
 
-// 유튜브 링크 추출 함수 추가
 function extractYouTubeVideoId(url: string): string | null {
   const youtubeRegex =
     /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -176,7 +252,17 @@ export async function submitPost(input: {
   mediaIds: string[];
   booktitle?: string;
   bookauthor?: string;
-  youtubeLinks?: string[]; // YouTube 링크 추가s
+  youtubeLinks?: string[];
+  bookInfo?: {
+    title: string;
+    author: string;
+    image: string;
+    publisher: string;
+    pubdate: string;
+    isbn: string;
+    description: string;
+    link?: string;
+  };
 }) {
   try {
     const { user } = await validateRequest();
@@ -192,29 +278,43 @@ export async function submitPost(input: {
       mediaIds,
       booktitle,
       bookauthor,
-      youtubeLinks = [], // 기본값 설정
+      youtubeLinks = [],
+      bookInfo,
     } = validationResult.data;
 
-    // YouTube 링크에서 비디오 ID 추출
     const youtubeVideoIds = youtubeLinks
       .map(extractYouTubeVideoId)
       .filter(Boolean) as string[];
 
     const newPost = await prisma.$transaction(async (tx) => {
+      // 먼저 post를 생성
       const post = await tx.post.create({
         data: {
           content,
           userId: user.id,
           booktitle,
           bookauthor,
-          // mediaIds가 있는 경우에만 attachments 연결
+          youtubeLinks: youtubeVideoIds,
           ...(mediaIds.length > 0 && {
             attachments: {
               connect: mediaIds.map((id) => ({ id })),
             },
           }),
-
-          youtubeLinks: youtubeVideoIds, // 별도 필드로 저장s
+          // BookInfo가 있는 경우 생성
+          ...(bookInfo && {
+            bookInfo: {
+              create: {
+                title: bookInfo.title,
+                author: bookInfo.author,
+                image: bookInfo.image,
+                publisher: bookInfo.publisher,
+                pubdate: bookInfo.pubdate,
+                isbn: bookInfo.isbn,
+                description: bookInfo.description,
+                link: bookInfo.link,
+              },
+            },
+          }),
         },
         include: getPostDataInclude(user.id),
       });

@@ -980,6 +980,7 @@ export function getPostDataInclude(loggedInUserId: string) {
       select: getUserDataSelect(loggedInUserId),
     },
     attachments: true,
+    bookInfo: true, // bookInfo로 이름 변경
     likes: {
       where: {
         userId: loggedInUserId,
@@ -1014,9 +1015,38 @@ export function getPostDataInclude(loggedInUserId: string) {
   } satisfies Prisma.PostInclude;
 }
 
+export type BookInfoData = BookInfo;
+
 export type PostData = Prisma.PostGetPayload<{
   include: ReturnType<typeof getPostDataInclude>;
-}>;
+}> & {
+  bookInfo: {
+    id: string;
+    title: string;
+    author: string;
+    image: string;
+    publisher: string;
+    pubdate: string;
+    isbn: string;
+    description: string;
+    link: string | null; // null 허용으로 변경
+    createdAt: Date; // 필수 필드 추가
+    updatedAt: Date; // 필수 필드 추가
+    postId: string; // 필수 필드 추가
+  } | null; // nullable로 변경
+};
+
+export interface BookInfo {
+  id?: string; // DB에 저장될 때 필요
+  title: string;
+  author: string;
+  image: string;
+  publisher: string;
+  pubdate: string;
+  isbn: string;
+  description: string;
+  link?: string | null; // undefined 대신 null로 변경 // 선택적 필드
+}
 
 export interface PostsPage {
   posts: PostData[];
@@ -1079,16 +1109,23 @@ export function getCommentDataInclude(loggedInUserId: string) {
       select: getUserDataSelect(loggedInUserId),
     },
     replies: {
+      where: {
+        // 여기에 deleted 조건 추가
+        deleted: false,
+      },
       include: {
         user: {
           select: getUserDataSelect(loggedInUserId),
         },
         replies: {
+          where: {
+            // 중첩된 replies에도 조건 추가
+            deleted: false,
+          },
           include: {
             user: {
               select: getUserDataSelect(loggedInUserId),
             },
-            // 더 깊은 단계의 replies도 포함
             replies: true,
           },
         },
@@ -1111,6 +1148,10 @@ export function getCommentDataInclude(loggedInUserId: string) {
       select: getUserDataSelect(loggedInUserId),
     },
     replies: {
+      where: {
+        // 최상위 레벨의 replies에도 조건 추가
+        deleted: false,
+      },
       include: getReplyIncludes(),
       orderBy: {
         createdAt: "asc" as const,

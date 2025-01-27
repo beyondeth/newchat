@@ -98,6 +98,8 @@ model Post {
   quotedPostId  String?
   quotedPost    Post?     @relation("QuotedPosts", fields: [quotedPostId], references: [id])
   quotedByPosts Post[]    @relation("QuotedPosts")
+
+    bookInfo    BookInfo? // Book 정보 관계 추가
   
   @@index([quotedPostId])
 
@@ -365,4 +367,21 @@ model UserBlock {
   @@index([blockerId])
   @@index([blockedId])
   @@map("user_blocks")
+}
+
+// BookInfo 모델 추가
+model BookInfo {
+  id          String   @id @default(cuid())
+  title       String
+  author      String
+  image       String
+  publisher   String
+  pubdate     String
+  isbn        String
+  description String   @db.Text
+  link        String?
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId      String   @unique // 1:1 관계
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

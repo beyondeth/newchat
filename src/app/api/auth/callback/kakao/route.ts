@@ -1,7 +1,6 @@
 import { kakao, lucia } from "@/auth";
 import kyInstance from "@/lib/ky";
 import prisma from "@/lib/prisma";
-import streamServerClient from "@/lib/stream";
 import { slugify } from "@/lib/utils";
 import { OAuth2RequestError } from "arctic";
 import { generateIdFromEntropySize } from "lucia";
@@ -67,11 +66,6 @@ export async function GET(req: NextRequest) {
           kakaoId: String(kakaoUser.id),
           avatarUrl: kakaoUser.properties.profile_image,
         },
-      });
-      await streamServerClient.upsertUser({
-        id: userId,
-        username,
-        name: username,
       });
     });
 

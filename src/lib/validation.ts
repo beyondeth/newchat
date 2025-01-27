@@ -31,6 +31,20 @@ export const loginSchema = z.object({
 
 export type LoginValues = z.infer<typeof loginSchema>;
 
+// BookInfo 스키마 정의
+const bookInfoSchema = z
+  .object({
+    title: z.string(),
+    author: z.string(),
+    image: z.string().url(),
+    publisher: z.string(),
+    pubdate: z.string(),
+    isbn: z.string(),
+    description: z.string(),
+    link: z.string().url().optional(),
+  })
+  .optional();
+
 export const createPostSchema = z.object({
   content: z
     .string()
@@ -46,6 +60,7 @@ export const createPostSchema = z.object({
     .max(15, "저자 이름은 15자 이내로 입력해주세요.")
     .optional(),
   youtubeLinks: z.array(z.string()).optional().default([]),
+  bookInfo: bookInfoSchema, // bookInfo 필드 추가
 });
 
 export const updateUserProfileSchema = z.object({

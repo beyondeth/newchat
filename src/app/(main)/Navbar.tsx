@@ -111,17 +111,14 @@
 // }
 
 import { validateRequest } from "@/auth";
-import SearchField from "@/components/SearchField";
-import { Button } from "@/components/ui/button";
+import SearchField from "@/components/UnifiedSearch";
 import UserButton from "@/components/UserButton";
 import Image from "next/image";
 import Link from "next/link";
 import hashlogo from "@/assets/mebook.png";
-// import { BookmarkPlus, Home, Mail } from "lucide-react";
-
 import prisma from "@/lib/prisma";
 import NotificationsButton from "./NotificationsButton";
-import BlogButton from "@/components/BlogButton";
+import UnifiedSearch from "@/components/UnifiedSearch";
 
 export default async function Navbar() {
   const { user } = await validateRequest();
@@ -133,29 +130,27 @@ export default async function Navbar() {
         },
       })
     : 0;
+
   return (
     <header className="sticky top-0 z-10 bg-card shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
-        {/* 왼쪽: 로고 */}
         <Link href="/" className="flex items-center gap-2">
           <Image src={hashlogo} alt="Logo" width={40} height={40} priority />
           <div className="flex items-center">
-            <span className="text-sm font-semibold text-black"></span>
             <span className="text-sm text-black ml-1">
               『내생각과 책이 만나는 순간』
             </span>
           </div>
         </Link>
 
-        {/* 오른쪽: 검색, 알림, 유저버튼 */}
         <div className="flex items-center gap-1">
-          <SearchField />
+          <UnifiedSearch />
 
           <NotificationsButton
             initialState={{ unreadCount: unreadNotificationCount }}
             isLoggedIn={!!user}
           />
-          {/* <BlogButton /> */}
+
           <UserButton className="sm:ms-auto" />
         </div>
       </div>
