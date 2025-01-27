@@ -107,10 +107,14 @@ import {
   QueryFilters,
   useMutation,
   useQueryClient,
+  Query,
 } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { useToast } from "../ui/use-toast";
 import { deletePost, editPost } from "./actions";
+
+type PostFeedQueryData = InfiniteData<PostsPage, string | null>;
+type PostFeedQuery = Query<PostFeedQueryData, Error>;
 
 export function useDeletePostMutation() {
   const { toast } = useToast();
@@ -121,24 +125,23 @@ export function useDeletePostMutation() {
   const mutation = useMutation({
     mutationFn: deletePost,
     onSuccess: async (deletedPost) => {
-      const queryFilter: QueryFilters = { queryKey: ["post-feed"] };
+      const queryFilter: QueryFilters<PostFeedQueryData, Error> = {
+        queryKey: ["post-feed"],
+      };
 
       await queryClient.cancelQueries(queryFilter);
 
-      queryClient.setQueriesData<InfiniteData<PostsPage, string | null>>(
-        queryFilter,
-        (oldData) => {
-          if (!oldData) return;
+      queryClient.setQueriesData<PostFeedQueryData>(queryFilter, (oldData) => {
+        if (!oldData) return oldData;
 
-          return {
-            pageParams: oldData.pageParams,
-            pages: oldData.pages.map((page) => ({
-              nextCursor: page.nextCursor,
-              posts: page.posts.filter((p) => p.id !== deletedPost.id),
-            })),
-          };
-        },
-      );
+        return {
+          pageParams: oldData.pageParams,
+          pages: oldData.pages.map((page) => ({
+            nextCursor: page.nextCursor,
+            posts: page.posts.filter((p) => p.id !== deletedPost.id),
+          })),
+        };
+      });
 
       toast({
         description: "게시글이 삭제되었습니다",
@@ -167,33 +170,32 @@ export function useEditPostMutation() {
   return useMutation({
     mutationFn: editPost,
     onSuccess: async (editedPost) => {
-      const queryFilter: QueryFilters = { queryKey: ["post-feed"] };
+      const queryFilter: QueryFilters<PostFeedQueryData, Error> = {
+        queryKey: ["post-feed"],
+      };
 
       await queryClient.cancelQueries(queryFilter);
 
-      queryClient.setQueriesData<InfiniteData<PostsPage, string | null>>(
-        queryFilter,
-        (oldData) => {
-          if (!oldData) return;
+      queryClient.setQueriesData<PostFeedQueryData>(queryFilter, (oldData) => {
+        if (!oldData) return oldData;
 
-          return {
-            pageParams: oldData.pageParams,
-            pages: oldData.pages.map((page) => ({
-              nextCursor: page.nextCursor,
-              posts: page.posts.map((p) =>
-                p.id === editedPost.id
-                  ? {
-                      ...p,
-                      content: editedPost.content,
-                      booktitle: editedPost.booktitle,
-                      bookauthor: editedPost.bookauthor,
-                    }
-                  : p,
-              ),
-            })),
-          };
-        },
-      );
+        return {
+          pageParams: oldData.pageParams,
+          pages: oldData.pages.map((page) => ({
+            nextCursor: page.nextCursor,
+            posts: page.posts.map((p) =>
+              p.id === editedPost.id
+                ? {
+                    ...p,
+                    content: editedPost.content,
+                    booktitle: editedPost.booktitle,
+                    bookauthor: editedPost.bookauthor,
+                  }
+                : p,
+            ),
+          })),
+        };
+      });
 
       toast({
         description: "게시글 수정이 완료되었습니다",

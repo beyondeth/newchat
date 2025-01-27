@@ -7,9 +7,13 @@ import {
   QueryFilters,
   useMutation,
   useQueryClient,
+  Query,
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { updateUserProfile } from "./actions";
+
+type ProfileQueryData = InfiniteData<PostsPage, string | null>;
+type ProfileQuery = Query<ProfileQueryData, Error>;
 
 export function useUpdateProfileMutation() {
   const { toast } = useToast();
@@ -36,37 +40,34 @@ export function useUpdateProfileMutation() {
     onSuccess: async ([updatedUser, uploadResult]) => {
       const newAvatarUrl = uploadResult?.[0].serverData.avatarUrl;
 
-      const queryFilter: QueryFilters = {
+      const queryFilter: QueryFilters<ProfileQueryData, Error> = {
         queryKey: ["post-feed"],
       };
 
       await queryClient.cancelQueries(queryFilter);
 
-      queryClient.setQueriesData<InfiniteData<PostsPage, string | null>>(
-        queryFilter,
-        (oldData) => {
-          if (!oldData) return;
+      queryClient.setQueriesData<ProfileQueryData>(queryFilter, (oldData) => {
+        if (!oldData) return oldData;
 
-          return {
-            pageParams: oldData.pageParams,
-            pages: oldData.pages.map((page) => ({
-              nextCursor: page.nextCursor,
-              posts: page.posts.map((post) => {
-                if (post.user.id === updatedUser.id) {
-                  return {
-                    ...post,
-                    user: {
-                      ...updatedUser,
-                      avatarUrl: newAvatarUrl || updatedUser.avatarUrl,
-                    },
-                  };
-                }
-                return post;
-              }),
-            })),
-          };
-        },
-      );
+        return {
+          pageParams: oldData.pageParams,
+          pages: oldData.pages.map((page) => ({
+            nextCursor: page.nextCursor,
+            posts: page.posts.map((post) => {
+              if (post.user.id === updatedUser.id) {
+                return {
+                  ...post,
+                  user: {
+                    ...updatedUser,
+                    avatarUrl: newAvatarUrl || updatedUser.avatarUrl,
+                  },
+                };
+              }
+              return post;
+            }),
+          })),
+        };
+      });
 
       router.refresh();
 
