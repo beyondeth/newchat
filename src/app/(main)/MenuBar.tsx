@@ -21,13 +21,11 @@ export default function MenuBar({ className }: MenuBarProps) {
   };
 
   return (
-    <div
-      className={`${className} fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 sm:hidden z-50`}
-    >
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 sm:hidden z-50">
       <nav className="flex justify-around items-center h-16 px-6 py-2 max-w-screen-sm mx-auto">
         <Link
           href="/"
-          className="flex flex-col items-center gap-1.5 min-w-[3rem]"
+          className="flex flex-col items-center gap-1.5 min-w-[4rem]"
         >
           <Home className="w-6 h-6" />
           <span className="text-xs">홈</span>
@@ -35,7 +33,7 @@ export default function MenuBar({ className }: MenuBarProps) {
 
         <button
           onClick={() => setIsSearchOpen(true)}
-          className="flex flex-col items-center gap-1.5 min-w-[3rem]"
+          className="flex flex-col items-center gap-1.5 min-w-[4rem]"
         >
           <Search className="w-6 h-6" />
           <span className="text-xs">검색</span>
@@ -43,7 +41,7 @@ export default function MenuBar({ className }: MenuBarProps) {
 
         <button
           onClick={handleWriteClick}
-          className="flex flex-col items-center gap-1.5 min-w-[3rem]"
+          className="flex flex-col items-center gap-1.5 min-w-[4rem]"
         >
           <CirclePlus className="w-6 h-6" />
           <span className="text-xs">글쓰기</span>
@@ -51,7 +49,7 @@ export default function MenuBar({ className }: MenuBarProps) {
 
         <Link
           href="/bookmarks"
-          className="flex flex-col items-center gap-1.5 min-w-[3rem]"
+          className="flex flex-col items-center gap-1.5 min-w-[4rem]"
         >
           <BookmarkPlus className="w-6 h-6" />
           <span className="text-xs">북마크</span>
