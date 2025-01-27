@@ -6,9 +6,7 @@ import { Button } from "@/components/ui/button";
 import { SearchIcon, BookOpenText, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
 import { BookInfo } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
 export default function UnifiedSearch() {
   const router = useRouter();
