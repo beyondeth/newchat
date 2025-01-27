@@ -25,7 +25,13 @@ export const metadata: Metadata = {
     template: "%s | mebook",
     default: "mebook",
   },
-  description: "커뮤니티",
+  description: "책벌레들의 소통공간",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
   icons: {
     icon: "/mebook.png",
   },
@@ -37,7 +43,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <PostHogProvider>
           <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
