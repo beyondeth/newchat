@@ -119,3 +119,30 @@
 .str-chat__channel-search-bar-button--exit-search {
   display: none;
 }
+
+#root {
+  touch-action: pan-y;
+}
+
+/* 또는 더 엄격하게 적용하고 싶다면 */
+:root {
+  touch-action: pan-y;
+}
+
+body {
+  touch-action: pan-y;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+* {
+  overscroll-behavior: none;
+  overscroll-behavior-y: none;
+}
