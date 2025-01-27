@@ -15,26 +15,27 @@ export default function MenuBar({ className }: MenuBarProps) {
   const router = useRouter();
 
   const handleWriteClick = () => {
-    // 현재 경로가 홈이 아니면 홈으로만 이동
     if (window.location.pathname !== "/") {
       router.push("/");
     }
-    // 홈에서는 아무 동작 하지 않음 - 사용자가 직접 입력 시작
   };
 
   return (
     <div
-      className={`${className} bg-white border-t border-gray-200 sm:hidden z-50`}
+      className={`${className} fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 sm:hidden z-50`}
     >
-      <nav className="flex justify-around items-center h-16 px-4 max-w-screen-sm mx-auto">
-        <Link href="/" className="flex flex-col items-center gap-1">
+      <nav className="flex justify-around items-center h-16 px-6 py-2 max-w-screen-sm mx-auto">
+        <Link
+          href="/"
+          className="flex flex-col items-center gap-1.5 min-w-[3rem]"
+        >
           <Home className="w-6 h-6" />
           <span className="text-xs">홈</span>
         </Link>
 
         <button
           onClick={() => setIsSearchOpen(true)}
-          className="flex flex-col items-center gap-1"
+          className="flex flex-col items-center gap-1.5 min-w-[3rem]"
         >
           <Search className="w-6 h-6" />
           <span className="text-xs">검색</span>
@@ -42,13 +43,16 @@ export default function MenuBar({ className }: MenuBarProps) {
 
         <button
           onClick={handleWriteClick}
-          className="flex flex-col items-center gap-1"
+          className="flex flex-col items-center gap-1.5 min-w-[3rem]"
         >
           <CirclePlus className="w-6 h-6" />
           <span className="text-xs">글쓰기</span>
         </button>
 
-        <Link href="/bookmarks" className="flex flex-col items-center gap-1">
+        <Link
+          href="/bookmarks"
+          className="flex flex-col items-center gap-1.5 min-w-[3rem]"
+        >
           <BookmarkPlus className="w-6 h-6" />
           <span className="text-xs">북마크</span>
         </Link>
