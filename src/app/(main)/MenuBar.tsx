@@ -1,7 +1,6 @@
 "use client";
 
-import { validateRequest } from "@/auth";
-import { BookmarkPlus, CirclePlus, Home, Search, User } from "lucide-react";
+import { BookmarkPlus, CirclePlus, Home, Search } from "lucide-react";
 import Link from "next/link";
 import UnifiedSearch from "@/components/UnifiedSearch";
 import { useState } from "react";
@@ -9,10 +8,9 @@ import { useRouter } from "next/navigation";
 
 interface MenuBarProps {
   className?: string;
-  unreadNotificationCount?: number;
 }
 
-export default function MenuBar() {
+export default function MenuBar({ className }: MenuBarProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const router = useRouter();
 
@@ -25,7 +23,9 @@ export default function MenuBar() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 sm:hidden z-50">
+    <div
+      className={`${className} bg-white border-t border-gray-200 sm:hidden z-50`}
+    >
       <nav className="flex justify-around items-center h-16 px-4 max-w-screen-sm mx-auto">
         <Link href="/" className="flex flex-col items-center gap-1">
           <Home className="w-6 h-6" />
@@ -34,7 +34,7 @@ export default function MenuBar() {
 
         <button
           onClick={() => setIsSearchOpen(true)}
-          className="flex flex-col items-center gap-1 "
+          className="flex flex-col items-center gap-1"
         >
           <Search className="w-6 h-6" />
           <span className="text-xs">검색</span>
