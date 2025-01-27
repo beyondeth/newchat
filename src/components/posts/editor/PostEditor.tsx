@@ -467,18 +467,6 @@ export default function PostEditor() {
       {
         ...data,
         mediaIds: attachments.map((a) => a.mediaId).filter(Boolean) as string[],
-        // bookInfo: selectedBook
-        //   ? {
-        //       title: selectedBook.title.replace(/<[^>]*>/g, ""),
-        //       author: selectedBook.author.replace(/<[^>]*>/g, ""),
-        //       image: selectedBook.image,
-        //       publisher: selectedBook.publisher,
-        //       pubdate: selectedBook.pubdate,
-        //       isbn: selectedBook.isbn,
-        //       description: selectedBook.description?.replace(/<[^>]*>/g, ""),
-        //       link: selectedBook.link ?? undefined,
-        //     }
-        //   : undefined,
       },
       {
         onSuccess: () => {
@@ -501,11 +489,6 @@ export default function PostEditor() {
             className="hidden sm:inline"
           />
           <div {...rootProps} className="w-full">
-            {/* BookSearch 컴포넌트 추가 */}
-            {/* <div className="mb-3">
-              <BookSearch onBookSelect={handleBookSelect} />
-            </div> */}
-
             <div className="flex gap-3 mb-3">
               <div className="flex flex-col flex-1">
                 <Input
