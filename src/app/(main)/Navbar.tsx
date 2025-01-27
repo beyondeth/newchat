@@ -144,7 +144,7 @@ export default async function Navbar() {
         </Link>
 
         <div className="flex items-center gap-1">
-          <UnifiedSearch />
+          {/* <UnifiedSearch /> */}
 
           <NotificationsButton
             initialState={{ unreadCount: unreadNotificationCount }}

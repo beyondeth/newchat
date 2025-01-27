@@ -110,6 +110,10 @@ export class RedisChat {
       console.error("Failed to delete room messages:", error);
     }
   }
+
+  async publishMessage(roomId: string, message: RedisChatMessage) {
+    await pusher.trigger(`chat-${roomId}`, "new-message", message);
+  }
 }
 
 export const redisChat = new RedisChat();
